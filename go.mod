@@ -1,3 +1,3 @@
-module github.com/cloudresty/go-log
+module github.com/cloudresty/golog
 
-go 1.19
+go 1.24
