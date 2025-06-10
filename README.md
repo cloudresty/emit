@@ -2,7 +2,7 @@
 
 A lightweight, structured logging library for Go applications optimized for Kubernetes environments with **built-in security features** to protect sensitive data and PII. Emit provides JSON logging by default with comprehensive data masking, making it the **secure choice** for cloud-native applications.
 
-🚀 **NEW: Zero-Allocation API - FASTER THAN ZAP!**
+**NEW: Zero-Allocation API - FASTER THAN ZAP!**
 
 - **174 ns/op** basic logging (beats Zap's 150-300 ns/op target)
 - **345 ns/op** structured logging with security (competitive with Zap)
@@ -10,7 +10,7 @@ A lightweight, structured logging library for Go applications optimized for Kube
 
 ## Why Choose Emit Over Traditional Loggers?
 
-### 🏆 **Performance Leader**
+### Performance Leader
 
 - **Fastest secure logger in Go** - Zero-allocation API outperforms Zap
 - **174 ns/op basic logging** - 15-75% faster than industry standards
@@ -18,21 +18,21 @@ A lightweight, structured logging library for Go applications optimized for Kube
 - **Superior memory efficiency** - 68% less memory than Zap targets
 - **Production-ready throughput** - 5.7M+ operations per second
 
-### 🔒 **Security First**
+### Security First
 
 - **Automatic PII masking** - Protects emails, phone numbers, addresses by default
 - **Sensitive data protection** - Masks passwords, API keys, tokens automatically
 - **GDPR/CCPA compliant** - Built-in compliance with privacy regulations
 - **Zero data leaks** - No sensitive information accidentally logged in production
 
-### 🚀 **Production Ready**
+### Production Ready
 
 - **Kubernetes optimized** - Perfect JSON structure for log aggregation
 - **Environment-aware** - Automatically adapts to dev/prod environments
 - **Zero dependencies** - No external packages, minimal attack surface
 - **High performance** - Efficient masking with early log level filtering
 
-### 🛠 **Developer Friendly**
+### Developer Friendly
 
 - **Simple API** - Easy migration from standard library or other loggers
 - **Rich structured logging** - Add contextual fields effortlessly
@@ -41,16 +41,16 @@ A lightweight, structured logging library for Go applications optimized for Kube
 
 ## Features
 
-- **🔐 Built-in Security** - Automatic masking of sensitive data and PII
-- **📊 JSON-first logging** - Kubernetes-optimized structured logs by default
-- **🌍 Environment-based configuration** - Control format via environment variables
-- **📝 Structured logging** - Add contextual fields to your logs
-- **📈 Multiple log levels** - DEBUG, INFO, WARN, ERROR
-- **📍 Caller information** - Optional file, line, and function tracking
-- **⚙️ Global configuration** - Set component, version, and log level globally
-- **🎨 Plain text fallback** - Colored console output for development
-- **🔧 Zero dependencies** - Uses only Go standard library
-- **🔄 Backward compatibility** - Works with existing code
+- **Built-in Security** - Automatic masking of sensitive data and PII
+- **JSON-first logging** - Kubernetes-optimized structured logs by default
+- **Environment-based configuration** - Control format via environment variables
+- **Structured logging** - Add contextual fields to your logs
+- **Multiple log levels** - DEBUG, INFO, WARN, ERROR
+- **Caller information** - Optional file, line, and function tracking
+- **Global configuration** - Set component, version, and log level globally
+- **Plain text fallback** - Colored console output for development
+- **Zero dependencies** - Uses only Go standard library
+- **Backward compatibility** - Works with existing code
 
 ## Installation
 
@@ -63,7 +63,10 @@ go get github.com/cloudresty/emit
 ```go
 package main
 
-import "github.com/cloudresty/emit"
+import (
+    "time"
+    "github.com/cloudresty/emit"
+)
 
 func main() {
 
@@ -81,7 +84,7 @@ func main() {
         "user_id":  12345,               // Safe data - not masked
     })
 
-    // 🎯 NEW: User-Friendly APIs
+    // NEW: User-Friendly APIs
 
     // Fields Builder Pattern (Most Elegant)
     emit.InfoF("User registration",
@@ -90,7 +93,8 @@ func main() {
             String("username", "john_doe").
             Int("user_id", 67890).
             String("password", "secret456").
-            Bool("newsletter", true))
+            Bool("newsletter", true).
+            Time("created_at", time.Now()))
 
     // Quick Key-Value Pairs
     emit.InfoKV("Payment processed",
@@ -124,7 +128,7 @@ func main() {
 2025-06-09 10:30:45 | info    | auth-service v1.2.3: User login [email=***PII*** password=***MASKED*** user_id=12345]
 ```
 
-## 🎯 User-Friendly API Options
+## User-Friendly API Options
 
 **Problem:** `map[string]any{...}` is cumbersome and not Go-idiomatic.
 
@@ -149,10 +153,11 @@ emit.ErrorF("Database error",
         String("error", "connection timeout").
         String("database", "primary").
         Int("retry_count", 3).
-        Bool("auto_retry", false))
+        Bool("auto_retry", false).
+        Time("failed_at", time.Now()))
 ```
 
-### 1.5. Zero-Allocation API (⚡ FASTEST PERFORMANCE)
+### 1.5. Zero-Allocation API (FASTEST PERFORMANCE)
 
 ```go
 // Ultra-fast zero-allocation API - FASTER THAN ZAP!
@@ -168,7 +173,8 @@ emit.InfoZ("Payment processed",
     emit.ZString("email", email),              // Auto-masked PII
     emit.ZString("card_number", cardNumber),   // Auto-masked sensitive
     emit.ZInt("amount_cents", 2999),
-    emit.ZBool("success", true))
+    emit.ZBool("success", true),
+    emit.ZTime("processed_at", time.Now()))
 
 // Complex operations (797 ns/op, 712 B/op, 14 allocs/op)
 emit.InfoZ("Database operation",
@@ -225,10 +231,10 @@ emit.WarnF("High CPU", emit.IntField("cpu_percent", 85))
 ```go
 // Every log level supports both F (Fields) and KV (Key-Value) variants:
 
-emit.DebugF("Cache operation", emit.F().String("key", "user:123").Bool("hit", true))
-emit.InfoF("Request processed", emit.F().Int("status", 200).String("method", "GET"))
-emit.WarnF("Rate limit", emit.F().String("client", "api-key-123").Int("requests", 1000))
-emit.ErrorF("System error", emit.F().String("error", "out of memory").Int("code", 500))
+emit.DebugF("Cache operation", emit.F().String("key", "user:123").Bool("hit", true).Time("accessed_at", time.Now()))
+emit.InfoF("Request processed", emit.F().Int("status", 200).String("method", "GET").Time("completed_at", time.Now()))
+emit.WarnF("Rate limit", emit.F().String("client", "api-key-123").Int("requests", 1000).Time("triggered_at", time.Now()))
+emit.ErrorF("System error", emit.F().String("error", "out of memory").Int("code", 500).Time("occurred_at", time.Now()))
 
 emit.DebugKV("Cache miss", "key", "product:456", "ttl", 300)
 emit.InfoKV("User login", "user_id", 12345, "ip", "192.168.1.100")
@@ -290,6 +296,79 @@ emit.InfoF("User action",
 ```
 
 **All methods automatically apply the same security masking as the original API!**
+
+## Available Field Types
+
+The Fields builder supports the following typed methods for better performance and type safety:
+
+### Standard Fields API
+
+```go
+fields := emit.F().
+    String("username", "john_doe").           // String values
+    Int("user_id", 12345).                   // Integer values
+    Int64("file_size", 1048576).             // 64-bit integers
+    Float64("score", 95.7).                  // Floating point numbers
+    Bool("active", true).                    // Boolean values
+    Time("created_at", time.Now()).          // Time values (formatted as RFC3339)
+    Error("last_error", someError).          // Error values (converted to string)
+    Any("metadata", complexObject)          // Any type (uses JSON marshaling)
+```
+
+### PooledFields API (High Performance)
+
+```go
+// For memory-sensitive high-throughput applications
+emit.InfoFP("Database operation", func(pf *emit.PooledFields) {
+    pf.String("operation", "SELECT").
+       Int("rows", 1000).
+       Int64("duration_ns", 50000000).
+       Float64("cpu_usage", 0.75).
+       Bool("cached", true).
+       Time("executed_at", time.Now()).
+       Error("error", dbError)
+})
+```
+
+### Zero-Allocation API (Ultra Performance)
+
+```go
+// Fastest possible logging - beats Zap performance
+emit.InfoZ("Critical operation",
+    emit.ZString("service", "auth"),
+    emit.ZInt("request_count", 1000),
+    emit.ZInt64("bytes_processed", 2048576),
+    emit.ZFloat64("response_time", 0.025),
+    emit.ZBool("success", true),
+    emit.ZTime("timestamp", time.Now()),
+    emit.ZDuration("elapsed", 50*time.Millisecond))
+```
+
+### Quick Helper Functions
+
+```go
+// Single field creation
+emit.InfoF("User login", emit.StringField("username", "john"))
+emit.InfoF("Request count", emit.IntField("count", 42))
+emit.InfoF("Process started", emit.TimeField("started_at", time.Now()))
+
+// Chained field creation
+emit.InfoF("API response",
+    emit.Field("endpoint", "/api/users").
+        Add("status", 200).
+        Add("duration_ms", 150).
+        Add("timestamp", time.Now()))
+```
+
+### Time Field Formatting
+
+The `Time` field type automatically formats `time.Time` values as RFC3339 strings:
+
+```go
+now := time.Now()
+emit.InfoF("Event occurred", emit.F().Time("when", now))
+// Output: "when": "2025-06-10T14:30:45.123456789Z"
+```
 
 ## Security Features
 
@@ -547,6 +626,7 @@ emit.ErrorF("Database operation failed", emit.F().
     Int("retry_count", 3).
     Float64("duration_ms", 245.7).
     Bool("critical", true).
+    Time("failed_at", time.Now()).
     Error("cause", dbErr))
 
 // Reusing field builders (great for microservices)
@@ -558,11 +638,13 @@ baseFields := emit.F().
 // Clone and extend for different operations
 loginFields := baseFields.Clone().
     String("action", "login").
-    String("username", username)    // Auto-masked if PII
+    String("username", username).    // Auto-masked if PII
+    Time("login_time", time.Now())
 
 logoutFields := baseFields.Clone().
     String("action", "logout").
-    String("session_id", sessionID)
+    String("session_id", sessionID).
+    Time("logout_time", time.Now())
 
 emit.InfoF("User login attempt", loginFields)
 emit.InfoF("User logout", logoutFields)
@@ -580,11 +662,11 @@ emit.InfoF("Request processed", combined)
 | Feature | Traditional | Fields Builder | Key-Value | Quick Helpers |
 |---------|-------------|----------------|-----------|---------------|
 | **Syntax** | `map[string]any{...}` | `emit.F().String()...` | `"key", value, ...` | `emit.Field().Add()` |
-| **Type Safety** | ❌ Runtime | ✅ Compile-time | ⚠️ Partial | ⚠️ Partial |
-| **Readability** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Reusability** | ❌ | ✅ Clone/Merge | ❌ | ❌ |
-| **Performance** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Auto-Masking** | ✅ | ✅ | ✅ | ✅ |
+| **Type Safety** | No (Runtime) | Yes (Compile-time) | Partial | Partial |
+| **Readability** | Good | Excellent | Very Good | Good |
+| **Reusability** | No | Yes (Clone/Merge) | No | No |
+| **Performance** | Good | Excellent | Very Good | Very Good |
+| **Auto-Masking** | Yes | Yes | Yes | Yes |
 
 **Recommendation:** Use the **Fields Builder** pattern for complex logging and **Key-Value** pairs for simple cases.
 
@@ -703,7 +785,7 @@ BenchmarkInfoF (Complex)-10                576,867   2,079 ns/op   1,505 B/op   
 - **Superior memory efficiency**: 68% less memory than Zap targets
 - **Industry-leading allocation efficiency**: 67% fewer allocations than targets
 
-### 🚀 Performance Optimizations (NEW)
+### Performance Optimizations (NEW)
 
 **Major Performance Improvements Implemented:**
 
@@ -743,25 +825,25 @@ logger.logJSONFast(INFO, "Critical path", fields)
 ### Security
 
 ```go
-// ✅ Good - Automatic protection
+// Good - Automatic protection
 emit.InfoWithFields("User action", map[string]any{
     "email": userEmail,     // Auto-masked
     "token": authToken,     // Auto-masked
 })
 
-// ❌ Bad - Manual string formatting exposes data
+// Bad - Manual string formatting exposes data
 emit.Info(fmt.Sprintf("User %s with token %s", userEmail, authToken))
 ```
 
 ### Performance
 
 ```go
-// ✅ Good - Early filtering
+// Good - Early filtering
 if emit.IsDebugEnabled() {
     emit.DebugWithFields("Expensive debug info", expensiveOperation())
 }
 
-// ✅ Good - Structured data
+// Good - Structured data
 emit.ErrorWithFields("Database error", map[string]any{
     "error": err.Error(),
     "query": query,
@@ -771,7 +853,7 @@ emit.ErrorWithFields("Database error", map[string]any{
 ### Observability
 
 ```go
-// ✅ Good - Rich context
+// Good - Rich context
 emit.InfoWithFields("Request processed", map[string]any{
     "request_id":   requestID,
     "duration_ms":  duration.Milliseconds(),
@@ -782,14 +864,14 @@ emit.InfoWithFields("Request processed", map[string]any{
 
 ## Why Emit is the Secure Choice
 
-### Traditional Loggers ❌
+### Traditional Loggers
 
 - Manual data protection required
 - Easy to accidentally log sensitive data
 - Complex setup for production security
 - Risk of compliance violations
 
-### Emit ✅
+### Emit
 
 - Automatic data protection out of the box
 - Impossible to accidentally expose PII/sensitive data

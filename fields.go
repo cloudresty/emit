@@ -1,5 +1,7 @@
 package emit
 
+import "time"
+
 // Fields provides a fluent API for building log fields
 type Fields map[string]any
 
@@ -51,6 +53,12 @@ func (f Fields) Float64(key string, value float64) Fields {
 // Bool adds a boolean field
 func (f Fields) Bool(key string, value bool) Fields {
 	f[key] = value
+	return f
+}
+
+// Time adds a time field (formats as RFC3339)
+func (f Fields) Time(key string, value time.Time) Fields {
+	f[key] = value.Format(time.RFC3339)
 	return f
 }
 
@@ -117,4 +125,9 @@ func IntField(key string, value int) Fields {
 // ErrorField creates a Fields object with an error field
 func ErrorField(key string, err error) Fields {
 	return NewFields().Error(key, err)
+}
+
+// TimeField creates a Fields object with a time field
+func TimeField(key string, value time.Time) Fields {
+	return NewFields().Time(key, value)
 }

@@ -1,7 +1,6 @@
 package emit
 
 import (
-	"regexp"
 	"strings"
 	"sync"
 )
@@ -16,11 +15,6 @@ type fieldPatternCache struct {
 }
 
 var (
-	// Pre-compiled regex patterns for better performance
-	emailRegex      = regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b`)
-	phoneRegex      = regexp.MustCompile(`\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b`)
-	creditCardRegex = regexp.MustCompile(`\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3[0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b`)
-
 	// Global field cache for faster lookups
 	fieldCache = &fieldPatternCache{
 		piiCache:       make(map[string]bool, 100),
@@ -154,20 +148,6 @@ func (l *Logger) maskSensitiveFieldsFast(fields map[string]any) map[string]any {
 	}
 
 	return maskedFields
-}
-
-// Content-based masking for string values (optional advanced feature)
-func (l *Logger) maskSensitiveContent(value string) string {
-	// Mask email patterns
-	value = emailRegex.ReplaceAllString(value, "***EMAIL***")
-
-	// Mask phone patterns
-	value = phoneRegex.ReplaceAllString(value, "***PHONE***")
-
-	// Mask credit card patterns
-	value = creditCardRegex.ReplaceAllString(value, "***CARD***")
-
-	return value
 }
 
 // ClearFieldCache clears the field pattern cache (for testing or dynamic field updates)

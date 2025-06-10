@@ -2,6 +2,7 @@ package emit
 
 import (
 	"sync"
+	"time"
 )
 
 // Memory pools for reducing allocations
@@ -9,22 +10,8 @@ import (
 var (
 	// Pool for map[string]any to reduce field map allocations
 	fieldMapPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return make(map[string]any, 8) // Pre-allocate for common field count
-		},
-	}
-
-	// Pool for Fields objects
-	fieldsPool = sync.Pool{
-		New: func() interface{} {
-			return make(Fields, 8)
-		},
-	}
-
-	// Pool for string slices used in plain text formatting
-	stringSlicePool = sync.Pool{
-		New: func() interface{} {
-			return make([]string, 0, 10)
 		},
 	}
 )
@@ -43,36 +30,6 @@ func getFieldMap() map[string]any {
 func putFieldMap(m map[string]any) {
 	if len(m) <= 32 { // Don't pool very large maps
 		fieldMapPool.Put(m)
-	}
-}
-
-// getFields gets a Fields object from the pool
-func getFields() Fields {
-	f := fieldsPool.Get().(Fields)
-	// Clear the fields
-	for k := range f {
-		delete(f, k)
-	}
-	return f
-}
-
-// putFields returns a Fields object to the pool
-func putFields(f Fields) {
-	if len(f) <= 32 { // Don't pool very large fields
-		fieldsPool.Put(f)
-	}
-}
-
-// getStringSlice gets a string slice from the pool
-func getStringSlice() []string {
-	s := stringSlicePool.Get().([]string)
-	return s[:0] // Reset length but keep capacity
-}
-
-// putStringSlice returns a string slice to the pool
-func putStringSlice(s []string) {
-	if cap(s) <= 50 { // Don't pool very large slices
-		stringSlicePool.Put(s)
 	}
 }
 
@@ -108,6 +65,12 @@ func (pf *PooledFields) Int(key string, value int) *PooledFields {
 	return pf
 }
 
+// Int64 adds an int64 field
+func (pf *PooledFields) Int64(key string, value int64) *PooledFields {
+	pf.fields[key] = value
+	return pf
+}
+
 // Bool adds a boolean field
 func (pf *PooledFields) Bool(key string, value bool) *PooledFields {
 	pf.fields[key] = value
@@ -117,6 +80,12 @@ func (pf *PooledFields) Bool(key string, value bool) *PooledFields {
 // Float64 adds a float64 field
 func (pf *PooledFields) Float64(key string, value float64) *PooledFields {
 	pf.fields[key] = value
+	return pf
+}
+
+// Time adds a time field (formats as RFC3339)
+func (pf *PooledFields) Time(key string, value time.Time) *PooledFields {
+	pf.fields[key] = value.Format(time.RFC3339)
 	return pf
 }
 
