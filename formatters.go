@@ -25,7 +25,7 @@ func (l *Logger) logJSON(level LogLevel, message string, fields map[string]any) 
 	}
 
 	if len(fields) > 0 {
-		entry.Fields = l.maskSensitiveFields(fields)
+		entry.Fields = l.maskSensitiveFieldsFast(fields)
 	}
 
 	if l.showCaller {
@@ -78,7 +78,7 @@ func (l *Logger) logPlain(level LogLevel, message string, fields map[string]any)
 	// Build the message with fields if present (with masking)
 	finalMessage := message
 	if len(fields) > 0 {
-		maskedFields := l.maskSensitiveFields(fields)
+		maskedFields := l.maskSensitiveFieldsFast(fields)
 		var fieldParts []string
 		for k, v := range maskedFields {
 			fieldParts = append(fieldParts, fmt.Sprintf("%s=%v", k, v))

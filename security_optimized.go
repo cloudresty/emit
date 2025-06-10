@@ -68,10 +68,20 @@ func (l *Logger) isPIIFieldFast(fieldName string) bool {
 
 	if !isPII {
 		// Fallback to substring search only if direct lookup fails
+		// Check if field name contains the pattern as a word or suffix/prefix
 		for pattern := range piiFieldsMap {
 			if strings.Contains(lowerFieldName, pattern) {
-				isPII = true
-				break
+				// Additional check to avoid false positives like "description" matching "ip"
+				// Only match if the pattern is at word boundaries or is a significant portion
+				if len(pattern) >= 3 || lowerFieldName == pattern ||
+					strings.HasPrefix(lowerFieldName, pattern+"_") ||
+					strings.HasSuffix(lowerFieldName, "_"+pattern) ||
+					strings.Contains(lowerFieldName, "_"+pattern+"_") ||
+					strings.HasPrefix(lowerFieldName, pattern) && len(pattern) >= len(lowerFieldName)/2 ||
+					strings.HasSuffix(lowerFieldName, pattern) && len(pattern) >= len(lowerFieldName)/2 {
+					isPII = true
+					break
+				}
 			}
 		}
 	}
