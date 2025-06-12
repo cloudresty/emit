@@ -53,15 +53,6 @@ func (l *Logger) logSimple(level LogLevel, message string) {
 	l.logSimpleExtremelyFast(level, message)
 }
 
-// logStructuredFields routes structured fields to our Phase 5B supremacy implementation
-func (l *Logger) logStructuredFieldsS(level LogLevel, message string, fields ...ZField) {
-	if level < l.level {
-		return
-	}
-	// Route to formatter
-	l.logStructuredFieldsRoute(level, message, fields...)
-}
-
 // logSimpleExtremelyFast provides ultra-fast simple message logging
 func (l *Logger) logSimpleExtremelyFast(level LogLevel, message string) {
 	// Use blazing fast path for simple messages (5ns target)

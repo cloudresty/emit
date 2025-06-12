@@ -1,47 +1,9 @@
 package emit
 
-import (
-	"sync/atomic"
-	"time"
-)
+// This file is reserved for the formatters_template.go implementation.
+// Template-based logging functionality will be implemented here when the Template API is added.
+// Currently no Template API exists in api.go, so this file contains only placeholder structure.
 
-var (
-	// Pre-formatted JSON templates for hot path
-	jsonTemplatePrefix = []byte(`{"timestamp":"`)
-	jsonLevelDebug     = []byte(`","level":"debug","msg":"`)
-	jsonLevelInfo      = []byte(`","level":"info","msg":"`)
-	jsonLevelWarn      = []byte(`","level":"warn","msg":"`)
-	jsonLevelError     = []byte(`","level":"error","msg":"`)
-	jsonSuffix         = []byte(`"}` + "\n")
-
-	// Cached timestamp (1-second precision)
-	cachedTimestamp atomic.Value
-)
-
-func init() {
-	updateCachedTimestamp()
-	go cachedTimestampUpdater()
-}
-
-func cachedTimestampUpdater() {
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-	for range ticker.C {
-		updateCachedTimestamp()
-	}
-}
-
-func updateCachedTimestamp() {
-	now := time.Now().UTC()
-	// Pre-formatted timestamp: 2006-01-02T15:04:05Z
-	timestamp := []byte(now.Format("2006-01-02T15:04:05Z"))
-	cachedTimestamp.Store(timestamp)
-}
-
-func getCachedTimestamp() []byte {
-	return cachedTimestamp.Load().([]byte)
-}
-
-// Template-based logging functionality
-// This file now focuses on template management and cached components
-// ZeroAlloc logging has been moved to formatters_zero_alloc.go for proper organization
+// Future Template API will provide:
+// emit.Info.Template(), emit.Error.Template(), etc.
+// For now, this file exists to maintain the clean API-to-file mapping.
