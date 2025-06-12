@@ -171,32 +171,36 @@ func ZDuration(key string, value time.Duration) DurationZField {
 // Zero-allocation logging functions
 
 // InfoZ logs an info message with zero-allocation fields
-func InfoZ(message string, fields ...ZField) {
-	if defaultLogger != nil && defaultLogger.level <= INFO {
-		defaultLogger.logZero(INFO, message, fields...)
-	}
-}
+// Deprecated: Use emit.Info.ZeroAlloc() for clearer intent
+// func InfoZ(message string, fields ...ZField) {
+// 	if defaultLogger != nil && defaultLogger.level <= INFO {
+// 		defaultLogger.logZero(INFO, message, fields...)
+// 	}
+// }
 
 // ErrorZ logs an error message with zero-allocation fields
-func ErrorZ(message string, fields ...ZField) {
-	if defaultLogger != nil && defaultLogger.level <= ERROR {
-		defaultLogger.logZero(ERROR, message, fields...)
-	}
-}
+// Deprecated: Use emit.Error.ZeroAlloc() for clearer intent
+// func ErrorZ(message string, fields ...ZField) {
+// 	if defaultLogger != nil && defaultLogger.level <= ERROR {
+// 		defaultLogger.logZero(ERROR, message, fields...)
+// 	}
+// }
 
 // WarnZ logs a warning message with zero-allocation fields
-func WarnZ(message string, fields ...ZField) {
-	if defaultLogger != nil && defaultLogger.level <= WARN {
-		defaultLogger.logZero(WARN, message, fields...)
-	}
-}
+// Deprecated: Use emit.Warn.ZeroAlloc() for clearer intent
+// func WarnZ(message string, fields ...ZField) {
+// 	if defaultLogger != nil && defaultLogger.level <= WARN {
+// 		defaultLogger.logZero(WARN, message, fields...)
+// 	}
+// }
 
 // DebugZ logs a debug message with zero-allocation fields
-func DebugZ(message string, fields ...ZField) {
-	if defaultLogger != nil && defaultLogger.level <= DEBUG {
-		defaultLogger.logZero(DEBUG, message, fields...)
-	}
-}
+// Deprecated: Use emit.Debug.ZeroAlloc() for clearer intent
+// func DebugZ(message string, fields ...ZField) {
+// 	if defaultLogger != nil && defaultLogger.level <= DEBUG {
+// 		defaultLogger.logZero(DEBUG, message, fields...)
+// 	}
+// }
 
 // logZero performs zero-allocation logging
 func (l *Logger) logZero(level LogLevel, message string, fields ...ZField) {
@@ -204,20 +208,6 @@ func (l *Logger) logZero(level LogLevel, message string, fields ...ZField) {
 		return
 	}
 
-	// Get encoder from pool
-	enc := getZeroAllocEncoder()
-	defer putZeroAllocEncoder(enc)
-
-	// Reset encoder
-	enc.reset()
-
-	// Write log entry using zero-allocation encoder
-	if l.format == PLAIN_FORMAT {
-		l.logZeroPlain(enc, level, message, fields...)
-	} else {
-		l.logZeroJSON(enc, level, message, fields...)
-	}
-
-	// Write to output
-	l.writer.Write(enc.bytes())
+	// Route to the zero-allocation logging
+	l.logZeroBlazing(level, message, fields...)
 }

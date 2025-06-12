@@ -107,6 +107,7 @@ func (pf *PooledFields) ToMap() map[string]any {
 // Pool-based field creation functions for high-performance scenarios
 
 // PF creates a new PooledFields - ultra high performance API
+// Deprecated: Use emit.PooledField() for clearer intent
 func PF() *PooledFields {
 	return NewPooledFields()
 }
@@ -119,6 +120,8 @@ func WithPooledFields(fn func(*PooledFields)) {
 }
 
 // High-performance logging functions that use pooled fields
+// InfoFP logs an info message with pooled fields for high performance
+// Deprecated: Use emit.Info.Pool() for clearer intent
 func InfoFP(message string, fn func(*PooledFields)) {
 	if defaultLogger != nil && defaultLogger.level <= INFO {
 		pf := NewPooledFields()
@@ -128,6 +131,8 @@ func InfoFP(message string, fn func(*PooledFields)) {
 	}
 }
 
+// ErrorFP logs an error message with pooled fields for high performance
+// Deprecated: Use emit.Error.Pool() for clearer intent
 func ErrorFP(message string, fn func(*PooledFields)) {
 	if defaultLogger != nil && defaultLogger.level <= ERROR {
 		pf := NewPooledFields()
@@ -137,6 +142,8 @@ func ErrorFP(message string, fn func(*PooledFields)) {
 	}
 }
 
+// WarnFP logs a warning message with pooled fields for high performance
+// Deprecated: Use emit.Warn.Pool() for clearer intent
 func WarnFP(message string, fn func(*PooledFields)) {
 	if defaultLogger != nil && defaultLogger.level <= WARN {
 		pf := NewPooledFields()
@@ -146,6 +153,8 @@ func WarnFP(message string, fn func(*PooledFields)) {
 	}
 }
 
+// DebugFP logs a debug message with pooled fields for high performance
+// Deprecated: Use emit.Debug.Pool() for clearer intent
 func DebugFP(message string, fn func(*PooledFields)) {
 	if defaultLogger != nil && defaultLogger.level <= DEBUG {
 		pf := NewPooledFields()

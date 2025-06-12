@@ -103,9 +103,10 @@ func (f Fields) ToMap() map[string]any {
 // Global helper functions for quick field creation
 
 // F is a shorthand for creating Fields - the shortest possible API
-func F() Fields {
-	return NewFields()
-}
+// Deprecated: Use emit.Field() for clearer intent
+// func F() Fields {
+// 	return NewFields()
+// }
 
 // Field creates a single-field Fields object
 func Field(key string, value any) Fields {

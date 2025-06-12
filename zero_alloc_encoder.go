@@ -349,5 +349,3 @@ func (l *Logger) logZeroPlain(enc *ZeroAllocEncoder, level LogLevel, message str
 
 	enc.buf = append(enc.buf, '\n')
 }
-
-// stringToBytes is defined in formatters_optimized.go

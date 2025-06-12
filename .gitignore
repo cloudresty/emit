@@ -76,6 +76,7 @@ temp/
 # Development tools
 .air.toml
 tmp/
+benchmark/
 
 # Documentation build
 docs/_build/
