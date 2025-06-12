@@ -21,7 +21,6 @@ var (
 	structureFieldMid   = []byte(`":"`)
 	structureFieldEnd   = []byte(`"`)
 	structureIntStart   = []byte(`,`)
-	structureIntEnd     = []byte(``)
 )
 
 // logStructuredFields - <150ns target, single allocation
@@ -112,8 +111,8 @@ func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...Z
 	}
 
 	// Close JSON and add newline
-	copy(buf[pos:], jsonSuffix)
-	pos += len(jsonSuffix)
+	copy(buf[pos:], structureJSONSuffix)
+	pos += len(structureJSONSuffix)
 
 	// Single write operation - minimal syscall overhead
 	l.writer.Write(buf[:pos])
