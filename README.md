@@ -127,15 +127,15 @@ Every logging level (`Info`, `Error`, `Warn`, `Debug`) provides the same clean, 
 
 ```go
 // All levels support the same methods
-emit.Info.Msg(msg)                          // Simple message
-emit.Info.Field(msg, fields)                // Structured fields
-emit.Info.StructuredFields(msg, zfields...) // Ultra-fast structured fields (Zap-compatible)
-emit.Info.KeyValue(msg, k, v, ...)          // Key-value pairs
-emit.Info.Pool(msg, func)                   // Memory-pooled performance
+emit.Info.Msg(msg)                           // Simple message
+emit.Info.Field(msg, fields)                 // Structured fields
+emit.Info.StructuredFields(msg, zfields...)  // Ultra-fast structured fields (Zap-compatible)
+emit.Info.KeyValue(msg, k, v, ...)           // Key-value pairs
+emit.Info.Pool(msg, func)                    // Memory-pooled performance
 
 // Same elegant API for all levels
-emit.Error.Field(msg, fields)             // Error with structured data
-emit.Warn.KeyValue(msg, k, v, ...)        // Warning with key-values
+emit.Error.Field(msg, fields)                // Error with structured data
+emit.Warn.KeyValue(msg, k, v, ...)           // Warning with key-values
 emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 ```
 
@@ -182,6 +182,7 @@ emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 - **[Security Guide](docs/SECURITY.md)** - Security features and compliance examples
 - **[Performance Guide](docs/PERFORMANCE.md)** - Benchmarks and optimization strategies
 - **[Migration Guide](docs/MIGRATION.md)** - Migrate from other logging libraries
+- **[Benchmark Results](benchmarks/benchmark-results.md)** - Detailed performance comparisons
 
 &nbsp;
 
@@ -397,21 +398,7 @@ When choosing a logging library, most developers focus solely on performance met
 **Traditional Assumption**: "Security features must sacrifice performance"
 **Emit Reality**: Built-in security with industry-leading speed
 
-Our benchmarks demonstrate that Emit's automatic security features add **zero performance overhead** compared to manual implementations:
-
-```plaintext
-Security Benchmark Results:
-┌─────────────────────────────────┬──────────────┬──────────────┐
-│ Scenario                        │ ns/op        │ Relative     │
-├─────────────────────────────────┼──────────────┼──────────────┤
-│ Emit (automatic security)       │ 213 ns/op    │ Baseline     │
-│ Emit (security disabled)        │ 215 ns/op    │ 1.0x slower  │
-│ Zap (no security - UNSAFE)      │ 171 ns/op    │ 1.2x faster  │
-│ Zap (manual masking)            │ 409 ns/op    │ 1.9x slower  │
-│ Logrus (no security - UNSAFE)   │ 2,872 ns/op  │ 13.5x slower │
-│ Logrus (manual masking)         │ 3,195 ns/op  │ 15.0x slower │
-└─────────────────────────────────┴──────────────┴──────────────┘
-```
+Our benchmarks demonstrate that Emit's automatic security features add **zero performance overhead** compared to manual implementations: [Benchmark results](benchmarks/benchmark-results.md).
 
 **Key Insight**: Emit with automatic security (213 ns/op) is significantly faster than Logrus without any security protection (2,872 ns/op), and competitive with Zap's unsafe mode (171 ns/op) while providing complete data protection.
 

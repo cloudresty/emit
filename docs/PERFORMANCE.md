@@ -8,51 +8,7 @@ Complete guide to emit's performance features and optimization strategies.
 
 Emit is designed for **maximum performance** while maintaining **automatic security**. Our StructuredFields API achieves unprecedented performance with zero allocations, consistently outperforming industry leaders like Zap and Logrus.
 
-### Latest Benchmark Results (Apple M1 Max, Go 1.24.4)
-
-**Simple Message Logging Performance:**
-
-```plaintext
-Library         ns/op    ops/sec      Performance
-==================================================
-Emit            63.0     15,873,016   Fastest ✓
-Zap             82.0     12,195,122   1.3x slower
-Logrus        1,334.0       749,625   21.2x slower
-```
-
-**Structured Fields Logging Performance:**
-
-```plaintext
-Library         ns/op    B/op    allocs/op    Performance
-=========================================================
-Emit            96.0     0       0            Zero allocation ✓
-Zap            143.0     259     1            33% slower
-Logrus       (Uses different API patterns)
-```
-
-**Security Performance Impact:**
-
-```plaintext
-Configuration               ns/op      Security Level
-=====================================================
-Emit (Built-in Security)    213.0     Automatic PII/sensitive masking ✓
-Emit (Security Disabled)    215.0     No protection (2ns difference)
-Zap (No Security)           171.0     Fast but exposes data
-Zap (Manual Security)       409.0     2.4x performance penalty
-Logrus (No Security)      2,872.0     Slow baseline
-Logrus (Manual Security)  3,195.0     Additional overhead
-```
-
-### Performance Comparison vs Industry Leaders
-
-| **Library** | **Simple Logging** | **Structured Fields** | **Security** |
-|-------------|--------------------|-----------------------|--------------|
-| **Emit** | **63.0 ns/op** ✓ | **96.0 ns/op (0 allocs)** ✓ | **Built-in** ✓ |
-| Zap | 82.0 ns/op | 143.0 ns/op (1 alloc) | Manual |
-| Logrus | 1,334.0 ns/op | ~2,000+ ns/op | Manual |
-| Standard Log | 500+ ns/op | N/A | None |
-
-**Result: Emit is 23% faster than Zap in simple logging and 33% faster in structured logging while providing automatic security!**
+Check out the [benchmark results](../benchmarks/benchmark-results.md) for detailed comparisons.
 
 &nbsp;
 
@@ -71,7 +27,7 @@ emit.Debug.Msg("Cache warmed up")
 // Hot path logging
 func handleRequest() {
     defer func() {
-        emit.Debug.Msg("Request completed")  // 56 ns/op
+        emit.Debug.Msg("Request completed")
     }()
     // ... request processing
 }
@@ -79,11 +35,11 @@ func handleRequest() {
 
 ### 2. StructuredFields API (Ultra Fast)
 
-Performance: **96.0 ns/op with 0 B/op, 0 allocs/op - 10.4M+ operations/second**
+Performance: **70.0 ns/op with 0 B/op, 0 allocs/op - 10.4M+ operations/second**
 
 ```go
 // Ultra-fast structured fields logging (Zap-compatible API)
-emit.Info.StructuredFields("Request processed",               // 96.0 ns/op, 0 allocs
+emit.Info.StructuredFields("Request processed",
     emit.ZString("method", "POST"),
     emit.ZString("endpoint", "/api/users"),
     emit.ZInt("status", 200),
@@ -91,7 +47,7 @@ emit.Info.StructuredFields("Request processed",               // 96.0 ns/op, 0 a
     emit.ZBool("success", true))
 
 // Complex structured logging with zero allocations
-emit.Info.StructuredFields("API request",                     // 284.0 ns/op, 0 allocs
+emit.Info.StructuredFields("API request",
     emit.ZString("service", "user-service"),
     emit.ZString("operation", "create_user"),
     emit.ZString("user_id", "12345"),
@@ -105,7 +61,7 @@ emit.Info.StructuredFields("API request",                     // 284.0 ns/op, 0 
 
 // High-frequency trading example
 func processMarketData(price float64, volume int64) {
-    emit.Debug.StructuredFields("Market tick",                // 96.0 ns/op, 0 allocs
+    emit.Debug.StructuredFields("Market tick",
         emit.ZString("symbol", "AAPL"),
         emit.ZFloat64("price", price),
         emit.ZInt64("volume", volume),
@@ -119,7 +75,7 @@ Performance: **1,230.0 ns/op - 813K+ operations/second**
 
 ```go
 // Memory-efficient bulk operations
-emit.Info.Pool("Bulk operation", func(pf *emit.PooledFields) {  // 1,230.0 ns/op
+emit.Info.Pool("Bulk operation", func(pf *emit.PooledFields) {
     pf.String("operation", "user_import").
        Int("records", 10000).
        Float64("duration_ms", 250.7).
@@ -143,7 +99,7 @@ Performance: **1,231.0 ns/op - 812K+ operations/second**
 
 ```go
 // Balanced performance and simplicity
-emit.Info.KeyValue("User action",                          // 1,231.0 ns/op
+emit.Info.KeyValue("User action",
     "user_id", 12345,
     "action", "login",
     "success", true)
@@ -164,14 +120,14 @@ Performance: **1,276.0 ns/op simple, 3,150.0 ns/op complex**
 
 ```go
 // Rich structured logging
-emit.Info.Field("User registration",                       // 1,276.0 ns/op
+emit.Info.Field("User registration",
     emit.NewFields().
         String("email", "user@example.com").
         Int("user_id", 12345).
         Bool("newsletter", true))
 
 // Complex business events
-emit.Error.Field("Payment failed",                         // 3,150.0 ns/op
+emit.Error.Field("Payment failed",
     emit.NewFields().
         String("transaction_id", "txn_123").
         String("payment_method", "credit_card").
@@ -194,13 +150,13 @@ func criticalPath() {
     start := time.Now()
     // ... critical processing
 
-    emit.Debug.StructuredFields("Critical operation",       // 96 ns/op, 0 allocs
+    emit.Debug.StructuredFields("Critical operation",
         emit.ZDuration("duration", time.Since(start)))
 }
 
 // ✅ GOOD: Use Pool for bulk operations
 func bulkProcessor(items []Item) {
-    emit.Info.Pool("Bulk processing", func(pf *emit.PooledFields) {  // 1,230 ns/op
+    emit.Info.Pool("Bulk processing", func(pf *emit.PooledFields) {
         pf.Int("item_count", len(items)).
            Time("started_at", time.Now())
     })
@@ -208,7 +164,7 @@ func bulkProcessor(items []Item) {
 
 // ✅ OK: Use Field for complex business logic
 func businessEvent(order Order) {
-    emit.Info.Field("Order placed",                         // 1,276 ns/op
+    emit.Info.Field("Order placed",
         emit.NewFields().
             String("order_id", order.ID).
             Float64("total", order.Total).
@@ -293,7 +249,7 @@ func (te *TradingEngine) processTick(symbol string, price float64, volume int64)
     start := time.Now()
 
     // Critical path - use fastest logging
-    emit.Debug.StructuredFields("Market tick received",            // 174 ns/op
+    emit.Debug.StructuredFields("Market tick received",
         emit.ZString("symbol", symbol),
         emit.ZFloat64("price", price),
         emit.ZInt64("volume", volume))
@@ -301,14 +257,14 @@ func (te *TradingEngine) processTick(symbol string, price float64, volume int64)
     // ... trading logic (microseconds matter)
 
     // End of critical path
-    emit.Debug.StructuredFields("Tick processed",                  // 174 ns/op
+    emit.Debug.StructuredFields("Tick processed",
         emit.ZString("symbol", symbol),
         emit.ZInt64("processing_ns", time.Since(start).Nanoseconds()))
 }
 
 func (te *TradingEngine) executeOrder(order TradeOrder) {
     // Use StructuredFields for order execution logging
-    emit.Info.StructuredFields("Order executed",                   // 345 ns/op
+    emit.Info.StructuredFields("Order executed",
         emit.ZString("order_id", order.ID),
         emit.ZString("symbol", order.Symbol),
         emit.ZFloat64("price", order.Price),
@@ -331,7 +287,7 @@ func (ep *EventProcessor) processEvent(event Event) {
     atomic.AddInt64(&ep.processed, 1)
 
     // Log with zero allocation
-    emit.Debug.StructuredFields("Event processed",                 // 174 ns/op
+    emit.Debug.StructuredFields("Event processed",
         emit.ZString("event_type", event.Type),
         emit.ZString("event_id", event.ID),
         emit.ZInt64("sequence", event.Sequence))
@@ -341,7 +297,7 @@ func (ep *EventProcessor) processEvent(event Event) {
 
 func (ep *EventProcessor) logStatistics() {
     // Periodic statistics with pooled fields
-    emit.Info.Pool("Processing statistics", func(pf *emit.PooledFields) {  // 396 ns/op
+    emit.Info.Pool("Processing statistics", func(pf *emit.PooledFields) {
         pf.Int64("events_processed", atomic.LoadInt64(&ep.processed)).
            Float64("events_per_second", ep.calculateRate()).
            Float64("cpu_usage", ep.getCPUUsage()).
@@ -360,7 +316,7 @@ func (gw *Gateway) handleRequest(w http.ResponseWriter, r *http.Request) {
     requestID := generateRequestID()
 
     // Fast request logging
-    emit.Info.StructuredFields("Request received",                 // 174 ns/op
+    emit.Info.StructuredFields("Request received",
         emit.ZString("request_id", requestID),
         emit.ZString("method", r.Method),
         emit.ZString("path", r.URL.Path))
@@ -368,7 +324,7 @@ func (gw *Gateway) handleRequest(w http.ResponseWriter, r *http.Request) {
     // ... request processing
 
     // Response logging with timing
-    emit.Info.StructuredFields("Request completed",                // 345 ns/op
+    emit.Info.StructuredFields("Request completed",
         emit.ZString("request_id", requestID),
         emit.ZInt("status", 200),
         emit.ZInt64("duration_ns", time.Since(start).Nanoseconds()),
@@ -377,7 +333,7 @@ func (gw *Gateway) handleRequest(w http.ResponseWriter, r *http.Request) {
 
 func (gw *Gateway) logHealthCheck() {
     // Detailed health metrics with pooled fields
-    emit.Info.Pool("Health check", func(pf *emit.PooledFields) {    // 396 ns/op
+    emit.Info.Pool("Health check", func(pf *emit.PooledFields) {
         pf.Float64("cpu_percent", gw.getCPUUsage()).
            Float64("memory_percent", gw.getMemoryUsage()).
            Int64("active_connections", gw.getActiveConnections()).
@@ -392,29 +348,21 @@ func (gw *Gateway) logHealthCheck() {
 
 ## Memory Management
 
-### Memory Usage by API Type
-
-| **API** | **Memory per Log** | **Allocations** | **Use Case** |
-|---------|-------------------|-----------------|--------------|
-| **Msg()** | 24 B | 1 | Simple messages |
-| **StructuredFields()** | 0 B | 0 | High frequency, zero allocation |
-| **Pool()** | 512 B | 7 | Bulk operations |
-| **KeyValue()** | 464 B | 5 | General purpose |
-| **Field()** | 1,201-1,505 B | 13-21 | Complex structured |
+Emit's performance is not just about speed, but also about **memory efficiency**. The APIs are designed to minimize memory allocations, especially in high-frequency logging scenarios.
 
 ### Memory Optimization Tips
 
 ```go
 // ✅ BEST: Minimize allocations with StructuredFields API
 func highFrequencyOperation() {
-    emit.Debug.StructuredFields("Operation",                       // 0 allocations
+    emit.Debug.StructuredFields("Operation",
         emit.ZString("type", "critical"),
         emit.ZInt("count", counter))
 }
 
 // ✅ GOOD: Reuse pooled fields for bulk operations
 func bulkOperation() {
-    emit.Info.Pool("Bulk op", func(pf *emit.PooledFields) { // Reuses memory
+    emit.Info.Pool("Bulk op", func(pf *emit.PooledFields) {
         pf.String("operation", "bulk_insert").
            Int("records", 10000)
     })
@@ -517,7 +465,7 @@ func productionOptimized() {
 
 ### DO ✅
 
-- **Use StructuredFields()** for hot paths and high-frequency logging (96 ns/op, 0 allocs)
+- **Use StructuredFields()** for hot paths and high-frequency logging (~70 ns/op, 0 allocs)
 - **Use Msg()** for simple messages (63 ns/op)
 - **Use Pool()** for bulk operations with complex data (396 ns/op)
 - **Use KeyValue()** for general purpose logging (470 ns/op)
@@ -574,14 +522,7 @@ emit.Info.Field("Hot path", emit.NewFields().String("data", "value"))
 
 Emit's `StructuredFields` API represents a significant breakthrough in logging performance. Unlike traditional structured logging that requires memory allocations for each field, Emit achieves **zero heap allocations** while maintaining full compatibility with popular logging patterns.
 
-### Performance Comparison: Structured Fields
-
-| Operation | Library | ns/op | B/op | allocs/op | Performance |
-|-----------|---------|-------|------|-----------|-------------|
-| Basic Structured | **Emit** | **96.0** | **0** | **0** | **Fastest + Zero Alloc** ✓ |
-| Basic Structured | Zap | 143.0 | 259 | 1 | 33% slower, 1 allocation |
-| Complex Structured | **Emit** | **284.0** | **0** | **0** | **Zero Alloc** ✓ |
-| Complex Structured | Zap | 292.0 | 708 | 1 | Similar speed, 1 allocation |
+Please check the [benchmark results](../benchmarks/benchmark-results.md) for detailed performance comparisons against industry leaders like Zap and Logrus.
 
 ### The StructuredFields Advantage
 
@@ -607,7 +548,7 @@ emit.Info.StructuredFields("User login",
     emit.ZString("email", "user@example.com"),      // → "***MASKED***"
     emit.ZString("password", "secret123"),          // → "***MASKED***"
     emit.ZString("ip_address", "192.168.1.100"),    // → "***MASKED***"
-    emit.ZBool("success", true))                    // 96 ns/op total
+    emit.ZBool("success", true))
 ```
 
 ### When to Use Each API
@@ -615,7 +556,7 @@ emit.Info.StructuredFields("User login",
 ```go
 // 🏆 CHAMPION: StructuredFields for hot paths
 func criticalAPIEndpoint() {
-    emit.Info.StructuredFields("API call",          // 96 ns/op, 0 allocs
+    emit.Info.StructuredFields("API call",
         emit.ZString("endpoint", "/users"),
         emit.ZInt("status", 200),
         emit.ZFloat64("duration_ms", 15.2))
@@ -623,12 +564,12 @@ func criticalAPIEndpoint() {
 
 // 🥈 RUNNER-UP: Simple messages for basic logging
 func simpleLogging() {
-    emit.Info.Msg("Operation completed")            // 63 ns/op
+    emit.Info.Msg("Operation completed")
 }
 
 // 🥉 THIRD: Traditional APIs for complex business logic
 func businessEvent() {
-    emit.Info.Field("Order processed",              // 1,276 ns/op
+    emit.Info.Field("Order processed",
         emit.NewFields().
             String("order_id", "ord_123").
             Float64("total", 199.99))

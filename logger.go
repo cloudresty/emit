@@ -47,8 +47,8 @@ func (l *Logger) log(level LogLevel, message string, fields map[string]any) {
 
 // logSimpleUltraFast - Specialized simple message logger with dynamic buffer
 func (l *Logger) logSimpleUltraFast(level LogLevel, message string) {
-	// Start with optimal stack buffer for most common cases
-	var stackBuf [256]byte
+	// Start with small optimal stack buffer for most common cases
+	var stackBuf [128]byte
 	var pos int
 	var buf []byte = stackBuf[:]
 
