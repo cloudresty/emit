@@ -104,53 +104,9 @@ func (pf *PooledFields) ToMap() map[string]any {
 	return pf.fields
 }
 
-// Pool-based field creation functions for high-performance scenarios
-
-// PF creates a new PooledFields - ultra high performance API
-func PF() *PooledFields {
-	return NewPooledFields()
-}
-
 // WithPooledFields executes a function with pooled fields and automatically releases them
 func WithPooledFields(fn func(*PooledFields)) {
 	pf := NewPooledFields()
 	defer pf.Release()
 	fn(pf)
-}
-
-// High-performance logging functions that use pooled fields
-func InfoFP(message string, fn func(*PooledFields)) {
-	if defaultLogger != nil && defaultLogger.level <= INFO {
-		pf := NewPooledFields()
-		fn(pf)
-		defaultLogger.log(INFO, message, pf.ToMap())
-		pf.Release()
-	}
-}
-
-func ErrorFP(message string, fn func(*PooledFields)) {
-	if defaultLogger != nil && defaultLogger.level <= ERROR {
-		pf := NewPooledFields()
-		fn(pf)
-		defaultLogger.log(ERROR, message, pf.ToMap())
-		pf.Release()
-	}
-}
-
-func WarnFP(message string, fn func(*PooledFields)) {
-	if defaultLogger != nil && defaultLogger.level <= WARN {
-		pf := NewPooledFields()
-		fn(pf)
-		defaultLogger.log(WARN, message, pf.ToMap())
-		pf.Release()
-	}
-}
-
-func DebugFP(message string, fn func(*PooledFields)) {
-	if defaultLogger != nil && defaultLogger.level <= DEBUG {
-		pf := NewPooledFields()
-		fn(pf)
-		defaultLogger.log(DEBUG, message, pf.ToMap())
-		pf.Release()
-	}
 }

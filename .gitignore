@@ -77,12 +77,15 @@ temp/
 .air.toml
 tmp/
 
+
 # Documentation build
 docs/_build/
 
 # Ignore all .md files except README.md
 *.md
 !README.md
+!/docs/*.md
+!/benchmarks/*.md
 
 # Ignore all .txt files (benchmarks, results, temporary files)
 *.txt
@@ -91,6 +94,7 @@ docs/_build/
 examples/*/main
 examples/*/output.log
 test_output/
+benchmarks/benchmarks
 
 # Local development scripts
 run.sh

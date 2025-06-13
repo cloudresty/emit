@@ -5,6 +5,30 @@ import (
 	"sync"
 )
 
+// Default sensitive field patterns (case-insensitive)
+var defaultSensitiveFields = []string{
+	"password", "pwd", "pass", "secret", "key", "token", "auth",
+	"credential", "cred", "private", "confidential", "sensitive",
+	"api_key", "apikey", "access_token", "refresh_token", "jwt",
+	"session", "cookie", "authorization", "bearer", "oauth",
+	"client_secret", "private_key", "passphrase", "pin", "code",
+}
+
+// Default PII field patterns (case-insensitive)
+var defaultPIIFields = []string{
+	"email", "mail", "e_mail", "email_address", "emailaddress",
+	"phone", "mobile", "telephone", "phone_number", "phonenumber", "tel",
+	"ssn", "social_security", "social_security_number", "tax_id",
+	"credit_card", "creditcard", "card_number", "cardnumber", "ccn",
+	"passport", "passport_number", "license", "driver_license", "dl",
+	"name", "first_name", "last_name", "full_name", "firstname", "lastname", "fullname",
+	"address", "street", "city", "zip", "zipcode", "postal", "postal_code",
+	"ip", "ip_address", "ipaddress", "user_agent", "useragent",
+	"dob", "date_of_birth", "birthdate", "birthday", "birth_date",
+	"iban", "account_number", "bank_account", "routing_number",
+	"username", "user_name", "login", "userid",
+}
+
 // Optimized security implementation with caching and pre-compilation
 
 // Field pattern cache for faster lookup
