@@ -30,14 +30,12 @@ func (l *Logger) log(level LogLevel, message string, fields map[string]any) {
 		return
 	}
 
-	// PHASE 4B OPTIMIZATION: Ultra-fast path for simple message logging (no fields)
 	// This bypasses all security processing overhead for simple logging
 	if len(fields) == 0 {
 		l.logSimple(level, message)
 		return
 	}
 
-	// PHASE 5A ULTRA: Hypersonic complex fields optimization for <250ns/op target
 	// Route to appropriate formatter based on format setting and field complexity
 	if l.format == PLAIN_FORMAT {
 		l.logPlain(level, message, fields)
@@ -49,17 +47,14 @@ func (l *Logger) log(level LogLevel, message string, fields map[string]any) {
 
 // logSimple writes a simple log entry without fields (optimized fast path)
 func (l *Logger) logSimple(level LogLevel, message string) {
-	// PHASE 4B: Use extremely fast path for <100ns/op target
 	l.logSimpleExtremelyFast(level, message)
 }
 
 // logSimpleExtremelyFast provides ultra-fast simple message logging
 func (l *Logger) logSimpleExtremelyFast(level LogLevel, message string) {
-	// Use blazing fast path for simple messages (5ns target)
 	l.logZeroBlazing(level, message)
 }
 
-// PHASE 5C: Structured Fields API
 // InfoStructured logs at INFO level with structured fields optimization
 func InfoStructured(message string, fields ...ZField) {
 	defaultLogger.InfoStructured(message, fields...)

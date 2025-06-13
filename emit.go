@@ -2,11 +2,8 @@ package emit
 
 import "fmt"
 
-// Clean Emit API - Core Functions
-// This file contains all essential functions for the beautiful new emit API
-
 // parseKeyValuePairs converts variadic args to map[string]any
-// Used internally by the clean API for emit.Info.KeyValue() etc.
+// Used internally by the API for emit.Info.KeyValue() etc.
 func parseKeyValuePairs(keyValuePairs ...any) map[string]any {
 	if len(keyValuePairs) == 0 {
 		return nil
@@ -30,8 +27,8 @@ func parseKeyValuePairs(keyValuePairs ...any) map[string]any {
 	return fields
 }
 
-// Internal helper functions for the clean API
-// These provide the actual logging implementation for the beautiful namespace API
+// Internal helper functions for the API
+// These provide the actual logging implementation for the API namespace
 
 func logWithFields(level LogLevel, message string, fields Fields) {
 	if defaultLogger != nil {

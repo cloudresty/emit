@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// TestCleanAPI tests the new beautiful, clean API
+// TestCleanAPI tests the API of the emit package
 func TestCleanAPI(t *testing.T) {
 	var buf bytes.Buffer
 

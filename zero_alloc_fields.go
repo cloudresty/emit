@@ -168,40 +168,6 @@ func ZDuration(key string, value time.Duration) DurationZField {
 	return DurationZField{Key: key, Value: value}
 }
 
-// Zero-allocation logging functions
-
-// InfoZ logs an info message with zero-allocation fields
-// Deprecated: Use emit.Info.ZeroAlloc() for clearer intent
-// func InfoZ(message string, fields ...ZField) {
-// 	if defaultLogger != nil && defaultLogger.level <= INFO {
-// 		defaultLogger.logZero(INFO, message, fields...)
-// 	}
-// }
-
-// ErrorZ logs an error message with zero-allocation fields
-// Deprecated: Use emit.Error.ZeroAlloc() for clearer intent
-// func ErrorZ(message string, fields ...ZField) {
-// 	if defaultLogger != nil && defaultLogger.level <= ERROR {
-// 		defaultLogger.logZero(ERROR, message, fields...)
-// 	}
-// }
-
-// WarnZ logs a warning message with zero-allocation fields
-// Deprecated: Use emit.Warn.ZeroAlloc() for clearer intent
-// func WarnZ(message string, fields ...ZField) {
-// 	if defaultLogger != nil && defaultLogger.level <= WARN {
-// 		defaultLogger.logZero(WARN, message, fields...)
-// 	}
-// }
-
-// DebugZ logs a debug message with zero-allocation fields
-// Deprecated: Use emit.Debug.ZeroAlloc() for clearer intent
-// func DebugZ(message string, fields ...ZField) {
-// 	if defaultLogger != nil && defaultLogger.level <= DEBUG {
-// 		defaultLogger.logZero(DEBUG, message, fields...)
-// 	}
-// }
-
 // logZero performs zero-allocation logging
 func (l *Logger) logZero(level LogLevel, message string, fields ...ZField) {
 	if level < l.level {

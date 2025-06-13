@@ -1,4 +1,3 @@
-// Phase 4B: Ultra-fast timestamp generation for <100ns/op target
 package emit
 
 import (

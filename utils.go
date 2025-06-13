@@ -19,7 +19,6 @@ func (l LogLevel) String() string {
 }
 
 // StringFast returns the string representation of the log level with optimized performance
-// PHASE 4B: Optimized version that uses pre-allocated strings for better performance
 func (l LogLevel) StringFast() string {
 	// Use compile-time constants to avoid string allocation
 	switch l {

@@ -296,8 +296,6 @@ func SetProductionMode() {
 	SetShowCaller(false)
 }
 
-// PHASE 3: Timestamp precision configuration
-
 // ParseTimestampPrecision parses timestamp precision from string
 func ParseTimestampPrecision(precision string) TimestampPrecision {
 	switch strings.ToLower(precision) {

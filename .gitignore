@@ -76,7 +76,7 @@ temp/
 # Development tools
 .air.toml
 tmp/
-benchmark/
+
 
 # Documentation build
 docs/_build/
@@ -84,6 +84,8 @@ docs/_build/
 # Ignore all .md files except README.md
 *.md
 !README.md
+!/docs/*.md
+!/benchmarks/*.md
 
 # Ignore all .txt files (benchmarks, results, temporary files)
 *.txt

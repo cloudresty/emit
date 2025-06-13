@@ -5,7 +5,7 @@ import (
 )
 
 // Zero-allocation logging implementation
-// This is the real ZeroAlloc implementation that provides ultra-fast logging
+// This is the real ZeroAlloc implementation that provides fast logging
 // with minimal memory allocations for hot path scenarios.
 
 // Pre-formatted JSON templates for zero-allocation logging
@@ -24,8 +24,8 @@ func (l *Logger) logZeroBlazing(level LogLevel, message string, fields ...ZField
 		return // Critical: early exit
 	}
 
-	// Use even smaller stack buffer
-	var stackBuf [280]byte
+	// Use even smaller stack buffer - increased size for complex fields
+	var stackBuf [512]byte
 	var pos int
 
 	if l.format == JSON_FORMAT {
@@ -89,11 +89,11 @@ func (l *Logger) buildJSONZeroAlloc(buf []byte, level LogLevel, message string, 
 	return pos
 }
 
-// writeFieldZeroAlloc - Absolute fastest field writing
+// writeFieldZeroAlloc - fast field writing
 func (l *Logger) writeFieldZeroAlloc(buf []byte, pos int, field ZField) int {
 	switch f := field.(type) {
 	case StringZField:
-		// Ultra-fast string field: "key":"value"
+		// Fast string field: "key":"value"
 		copy(buf[pos:], f.Key)
 		pos += len(f.Key)
 		copy(buf[pos:], `":"`)
@@ -104,7 +104,7 @@ func (l *Logger) writeFieldZeroAlloc(buf []byte, pos int, field ZField) int {
 		pos++
 
 	case IntZField:
-		// Ultra-fast int field: "key":123
+		// Fast int field: "key":123
 		copy(buf[pos:], f.Key)
 		pos += len(f.Key)
 		copy(buf[pos:], `":`)
@@ -112,7 +112,7 @@ func (l *Logger) writeFieldZeroAlloc(buf []byte, pos int, field ZField) int {
 		pos += writeIntZeroAlloc(buf[pos:], f.Value)
 
 	case Float64ZField:
-		// Ultra-fast float field: "key":25.4
+		// Fast float field: "key":25.4
 		copy(buf[pos:], f.Key)
 		pos += len(f.Key)
 		copy(buf[pos:], `":`)
@@ -120,7 +120,7 @@ func (l *Logger) writeFieldZeroAlloc(buf []byte, pos int, field ZField) int {
 		pos += writeFloat64ZeroAlloc(buf[pos:], f.Value)
 
 	case BoolZField:
-		// Ultra-fast bool field: "key":true
+		// Fast bool field: "key":true
 		copy(buf[pos:], f.Key)
 		pos += len(f.Key)
 		copy(buf[pos:], `":`)
@@ -139,13 +139,18 @@ func (l *Logger) writeFieldZeroAlloc(buf []byte, pos int, field ZField) int {
 
 // writeIntZeroAlloc - Fastest integer conversion
 func writeIntZeroAlloc(buf []byte, value int) int {
+	// Check buffer bounds
+	if len(buf) == 0 {
+		return 0
+	}
+
 	// Optimized for common small values
 	if value >= 0 && value <= 999 {
 		return writeSmallIntZeroAlloc(buf, value)
 	}
 
 	// Handle negative and larger numbers
-	if value < 0 {
+	if value < 0 && len(buf) >= 2 {
 		buf[0] = '-'
 		return 1 + writeSmallIntZeroAlloc(buf[1:], -value)
 	}
@@ -155,6 +160,11 @@ func writeIntZeroAlloc(buf []byte, value int) int {
 }
 
 func writeSmallIntZeroAlloc(buf []byte, value int) int {
+	// Check buffer bounds
+	if len(buf) == 0 {
+		return 0
+	}
+
 	if value == 0 {
 		buf[0] = '0'
 		return 1
@@ -163,16 +173,20 @@ func writeSmallIntZeroAlloc(buf []byte, value int) int {
 		buf[0] = byte('0' + value)
 		return 1
 	}
-	if value < 100 {
+	if value < 100 && len(buf) >= 2 {
 		buf[0] = byte('0' + value/10)
 		buf[1] = byte('0' + value%10)
 		return 2
 	}
 	// value < 1000
-	buf[0] = byte('0' + value/100)
-	buf[1] = byte('0' + (value/10)%10)
-	buf[2] = byte('0' + value%10)
-	return 3
+	if len(buf) >= 3 {
+		buf[0] = byte('0' + value/100)
+		buf[1] = byte('0' + (value/10)%10)
+		buf[2] = byte('0' + value%10)
+		return 3
+	}
+	// Buffer too small, return 0
+	return 0
 }
 
 func writeGenericIntZeroAlloc(buf []byte, value int) int {

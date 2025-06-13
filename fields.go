@@ -1,6 +1,9 @@
 package emit
 
-import "time"
+import (
+	"maps"
+	"time"
+)
 
 // Fields provides a fluent API for building log fields
 type Fields map[string]any
@@ -80,18 +83,14 @@ func (f Fields) Any(key string, value any) Fields {
 
 // Merge combines multiple Fields objects
 func (f Fields) Merge(other Fields) Fields {
-	for k, v := range other {
-		f[k] = v
-	}
+	maps.Copy(f, other)
 	return f
 }
 
 // Clone creates a copy of the Fields
 func (f Fields) Clone() Fields {
 	clone := make(Fields, len(f))
-	for k, v := range f {
-		clone[k] = v
-	}
+	maps.Copy(clone, f)
 	return clone
 }
 
@@ -101,12 +100,6 @@ func (f Fields) ToMap() map[string]any {
 }
 
 // Global helper functions for quick field creation
-
-// F is a shorthand for creating Fields - the shortest possible API
-// Deprecated: Use emit.Field() for clearer intent
-// func F() Fields {
-// 	return NewFields()
-// }
 
 // Field creates a single-field Fields object
 func Field(key string, value any) Fields {

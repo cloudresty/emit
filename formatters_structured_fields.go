@@ -23,7 +23,7 @@ var (
 	structureIntStart   = []byte(`,`)
 )
 
-// logStructuredFields - <150ns target, single allocation
+// logStructuredFields - single allocation
 func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...ZField) {
 	// Ultra-fast level check
 	if level < l.level {
