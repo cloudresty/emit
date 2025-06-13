@@ -282,14 +282,69 @@ func main() {
 
 ### Zap Migration Mapping
 
-| **Zap** | **Emit Equivalent** |
-|---------|-------------------|
-| `logger.Info("msg")` | `emit.Info.Msg("msg")` |
-| `logger.Info("msg", fields...)` | `emit.Info.Field("msg", emit.NewFields()...)` |
-| `zap.String("key", value)` | `.String("key", value)` (in Field builder) |
-| `zap.Int("key", value)` | `.Int("key", value)` (in Field builder) |
-| `zap.Error(err)` | `.Error("error", err)` (in Field builder) |
-| `logger.With(fields...).Info()` | Use `emit.NewFields().Clone()` pattern |
+| **Zap** | **Emit Equivalent** | **Performance** |
+|---------|-------------------|----------------|
+| `logger.Info("msg")` | `emit.Info.Msg("msg")` | **23% faster** |
+| `logger.Info("msg", fields...)` | `emit.Info.StructuredFields("msg", fields...)` | **33% faster, 0 allocs** |
+| `logger.Info("msg", fields...)` | `emit.Info.Field("msg", emit.NewFields()...)` | Compatible alternative |
+| `zap.String("key", value)` | `emit.ZString("key", value)` | Zero allocation |
+| `zap.Int("key", value)` | `emit.ZInt("key", value)` | Zero allocation |
+| `zap.Bool("key", value)` | `emit.ZBool("key", value)` | Zero allocation |
+| `zap.Float64("key", value)` | `emit.ZFloat64("key", value)` | Zero allocation |
+| `zap.Time("key", value)` | `emit.ZTime("key", value)` | Zero allocation |
+| `zap.Duration("key", value)` | `emit.ZDuration("key", value)` | Zero allocation |
+| `zap.Error(err)` | `.Error("error", err)` (in Field builder) | Auto-masking |
+| `logger.With(fields...).Info()` | Use `emit.NewFields().Clone()` pattern | Memory efficient |
+
+### Direct Zap Replacement (Recommended)
+
+```go
+// Before (Zap) - 143 ns/op, 259 B/op, 1 allocs/op
+zapLogger.Info("User registration",
+    zap.String("email", email),
+    zap.String("username", username),
+    zap.Int("user_id", userID),
+    zap.Bool("verified", verified),
+    zap.Time("created_at", time.Now()))
+
+// After (Emit) - 96 ns/op, 0 B/op, 0 allocs/op + automatic security
+emit.Info.StructuredFields("User registration",
+    emit.ZString("email", email),           // → "***MASKED***" (automatic)
+    emit.ZString("username", username),
+    emit.ZInt("user_id", userID),
+    emit.ZBool("verified", verified),
+    emit.ZTime("created_at", time.Now()))
+```
+
+### Complex Zap Migration Example
+
+```go
+// Before (Zap) - Complex setup with manual security
+func logPayment(payment Payment) {
+    // Manual masking required
+    maskedEmail := maskEmail(payment.Email)
+    maskedCard := maskCard(payment.CardNumber)
+
+    zapLogger.Info("Payment processed",
+        zap.String("transaction_id", payment.ID),
+        zap.String("email", maskedEmail),           // Manual masking
+        zap.String("card", maskedCard),             // Manual masking
+        zap.Float64("amount", payment.Amount),
+        zap.String("currency", payment.Currency),
+        zap.Bool("success", payment.Success))
+}
+
+// After (Emit) - Zero-config automatic security
+func logPayment(payment Payment) {
+    emit.Info.StructuredFields("Payment processed",
+        emit.ZString("transaction_id", payment.ID),
+        emit.ZString("email", payment.Email),       // → "***MASKED***" (automatic)
+        emit.ZString("card", payment.CardNumber),   // → "***MASKED***" (automatic)
+        emit.ZFloat64("amount", payment.Amount),
+        emit.ZString("currency", payment.Currency),
+        emit.ZBool("success", payment.Success))
+}
+```
 
 ## Migration from Zerolog
 

@@ -41,8 +41,8 @@ func TestCleanAPI(t *testing.T) {
 		"error", "test_error",
 		"code", 500)
 
-	// Test Warn.ZeroAlloc()
-	Warn.ZeroAlloc("Test zero-alloc logging",
+	// Test Warn.StructuredFields()
+	Warn.StructuredFields("Test structured fields logging",
 		ZString("service", "test"),
 		ZInt("count", 100))
 
@@ -64,7 +64,7 @@ func TestCleanAPI(t *testing.T) {
 	expectedMessages := []string{
 		"Test structured logging",
 		"Test key-value logging",
-		"Test zero-alloc logging",
+		"Test structured fields logging",
 		"Test pooled logging",
 		"Simple info message",
 		"Simple error message",

@@ -16,12 +16,12 @@ func (e EmitBenchmarkSet) GetBenchmarks() []BenchmarkFunc {
 		// Simple message benchmarks
 		{"Emit_SimpleMessage", e.BenchmarkSimpleMessage},
 
-		// Zero-allocation benchmarks
-		{"Emit_ZeroAlloc", e.BenchmarkZeroAlloc},
-		{"Emit_ZeroAllocFields", e.BenchmarkZeroAllocFields},
-		{"Emit_ZeroAllocFieldsComplex", e.BenchmarkZeroAllocFieldsComplex},
+		// StructuredFields benchmarks (zero-allocation)
+		{"Emit_StructuredFields", e.BenchmarkStructuredFields},
+		{"Emit_StructuredFieldsWithData", e.BenchmarkStructuredFieldsFields},
+		{"Emit_StructuredFieldsComplex", e.BenchmarkStructuredFieldsComplex},
 
-		// Structured field benchmarks
+		// Emit-specific field benchmarks
 		{"Emit_Field", e.BenchmarkField},
 		{"Emit_FieldComplex", e.BenchmarkFieldComplex},
 
@@ -42,23 +42,16 @@ func (e EmitBenchmarkSet) GetBenchmarks() []BenchmarkFunc {
 // Simple message logging benchmarks
 func (e EmitBenchmarkSet) BenchmarkSimpleMessage(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for i := 0; i < b.N; i++ {
 		emit.Info.Msg("Simple log message")
 	}
 }
 
-// Zero-allocation benchmarks
-func (e EmitBenchmarkSet) BenchmarkZeroAlloc(b *testing.B) {
+// StructuredFields benchmarks
+func (e EmitBenchmarkSet) BenchmarkStructuredFields(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
-		emit.Info.ZeroAlloc("Zero allocation log message")
-	}
-}
-
-func (e EmitBenchmarkSet) BenchmarkZeroAllocFields(b *testing.B) {
-	b.ResetTimer()
-	for b.Loop() {
-		emit.Info.ZeroAlloc("User action",
+		emit.Info.StructuredFields("User action",
 			emit.ZString("user_id", "12345"),
 			emit.ZString("action", "login"),
 			emit.ZString("ip_address", "192.168.1.100"),
@@ -66,10 +59,21 @@ func (e EmitBenchmarkSet) BenchmarkZeroAllocFields(b *testing.B) {
 	}
 }
 
-func (e EmitBenchmarkSet) BenchmarkZeroAllocFieldsComplex(b *testing.B) {
+func (e EmitBenchmarkSet) BenchmarkStructuredFieldsFields(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
-		emit.Info.ZeroAlloc("Complex operation",
+		emit.Info.StructuredFields("User action",
+			emit.ZString("user_id", "12345"),
+			emit.ZString("action", "login"),
+			emit.ZString("ip_address", "192.168.1.100"),
+			emit.ZBool("success", true))
+	}
+}
+
+func (e EmitBenchmarkSet) BenchmarkStructuredFieldsComplex(b *testing.B) {
+	b.ResetTimer()
+	for b.Loop() {
+		emit.Info.StructuredFields("Complex operation",
 			emit.ZString("service", "user-service"),
 			emit.ZString("operation", "create_user"),
 			emit.ZString("user_id", "12345"),
@@ -83,7 +87,7 @@ func (e EmitBenchmarkSet) BenchmarkZeroAllocFieldsComplex(b *testing.B) {
 	}
 }
 
-// Structured field benchmarks
+// Emit-specific field benchmarks
 func (e EmitBenchmarkSet) BenchmarkField(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
@@ -178,7 +182,7 @@ func (e EmitBenchmarkSet) BenchmarkPoolComplex(b *testing.B) {
 func (e EmitBenchmarkSet) BenchmarkSecurityBuiltIn(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
-		emit.Info.ZeroAlloc("User registration",
+		emit.Info.StructuredFields("User registration",
 			emit.ZString("password", "super_secret_123"), // Automatically masked (sensitive)
 			emit.ZString("email", "user@example.com"),    // Automatically masked (PII)
 			emit.ZString("api_key", "sk_live_abc123"),    // Automatically masked (sensitive)
@@ -192,7 +196,7 @@ func (e EmitBenchmarkSet) BenchmarkSecurityBuiltIn(b *testing.B) {
 func (e EmitBenchmarkSet) BenchmarkSecurityDisabled(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
-		emit.Info.ZeroAlloc("User registration",
+		emit.Info.StructuredFields("User registration",
 			emit.ZString("user_password", "super_secret_123"), // NOT masked (different key name)
 			emit.ZString("user_mail", "user@example.com"),     // NOT masked (different key name)
 			emit.ZString("service_key", "sk_live_abc123"),     // NOT masked (different key name)

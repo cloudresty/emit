@@ -34,7 +34,7 @@ func (l LogrusBenchmarkSet) GetBenchmarks() []BenchmarkFunc {
 // Simple message logging benchmarks
 func (l LogrusBenchmarkSet) BenchmarkSimpleMessage(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for i := 0; i < b.N; i++ {
 		logrusLogger.Info("Simple log message")
 	}
 }

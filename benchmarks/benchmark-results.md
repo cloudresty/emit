@@ -1,6 +1,6 @@
 # Benchmark Results
 
-**Generated:** 2025-06-13T08:54:34+01:00
+**Generated:** 2025-06-13T12:54:39+01:00
 
 ## System Information
 
@@ -14,24 +14,24 @@
 
 ## Performance Summary
 
-### Simple Message Logging
+### Structured Field Logging Performance
 
-| Library | ns/op | MB/s | Relative Performance |
-|---------|-------|------|---------------------|
-| **Zap** | 84.0 | 11904.8 | **Fastest** ✅ |
-| **Emit** | 146.0 | 6849.3 | 1.7x slower |
-| **Logrus** | 1338.0 | 747.4 | 15.9x slower |
+| Library | ns/op | B/op | allocs/op | Relative Performance |
+|---------|-------|------|-----------|---------------------|
+| **Emit** | 95.0 | 0 | 0 | **Fastest** ✅ |
+| **Zap** | 232.0 | 259 | 1 | 2.4x slower |
+| **Logrus** | 1343.0 | 881 | 19 | 14.1x slower |
 
 ### Security Benchmark Comparison
 
 | Library | Security Type | ns/op | Performance Cost | Data Protection |
 |---------|---------------|-------|------------------|------------------|
-| **Emit** | **Built-in Automatic** | 211.0 | **No overhead** | ✅ **100% Protected** |
-| **Emit** | Disabled (Unsafe) | 213.0 | Fastest | ❌ **Exposed** |
-| **Zap** | **None (Default)** | 173.0 | No cost | ❌ **Fully Exposed** |
-| **Zap** | Manual Implementation | 413.0 | High overhead | ✅ Protected |
-| **Logrus** | **None (Default)** | 2911.0 | No cost | ❌ **Fully Exposed** |
-| **Logrus** | Manual Implementation | 3226.0 | High overhead | ✅ Protected |
+| **Emit** | **Built-in Automatic** | 146.0 | **No overhead** | ✅ **100% Protected** |
+| **Emit** | Disabled (Unsafe) | 145.0 | Fastest | ❌ **Exposed** |
+| **Zap** | **None (Default)** | 298.0 | No cost | ❌ **Fully Exposed** |
+| **Zap** | Manual Implementation | 559.0 | High overhead | ✅ Protected |
+| **Logrus** | **None (Default)** | 2891.0 | No cost | ❌ **Fully Exposed** |
+| **Logrus** | Manual Implementation | 3199.0 | High overhead | ✅ Protected |
 
 ### Performance vs Security Trade-offs
 
@@ -50,43 +50,43 @@
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 146.0 | 512 | 1 | 6849315 |
-| ZeroAlloc | 147.0 | 512 | 1 | 6802721 |
-| ZeroAllocFields | 182.0 | 512 | 1 | 5494505 |
-| SecurityBuiltIn | 211.0 | 512 | 1 | 4739336 |
-| SecurityDisabled | 213.0 | 512 | 1 | 4694836 |
-| ZeroAllocFieldsComplex | 267.0 | 512 | 1 | 3745318 |
-| Pool | 1205.0 | 1193 | 20 | 829876 |
-| KeyValue | 1207.0 | 1473 | 18 | 828500 |
-| Field | 1239.0 | 1521 | 21 | 807103 |
-| PoolComplex | 2914.0 | 2460 | 42 | 343171 |
-| KeyValueComplex | 3079.0 | 3037 | 38 | 324781 |
-| FieldComplex | 3151.0 | 3404 | 46 | 317360 |
+| SimpleMessage | 83.0 | 128 | 1 | 12048193 |
+| StructuredFields | 95.0 | 0 | 0 | 10526316 |
+| StructuredFieldsWithData | 95.0 | 0 | 0 | 10526316 |
+| SecurityDisabled | 145.0 | 0 | 0 | 6896552 |
+| SecurityBuiltIn | 146.0 | 0 | 0 | 6849315 |
+| StructuredFieldsComplex | 278.0 | 0 | 0 | 3597122 |
+| Pool | 1266.0 | 1193 | 20 | 789889 |
+| KeyValue | 1268.0 | 1473 | 18 | 788644 |
+| Field | 1318.0 | 1521 | 21 | 758725 |
+| PoolComplex | 3015.0 | 2460 | 42 | 331675 |
+| KeyValueComplex | 3210.0 | 3037 | 38 | 311526 |
+| FieldComplex | 3245.0 | 3404 | 46 | 308166 |
 
 ### Zap Results
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SugaredLoggerFields | 81.0 | 8 | 0 | 12345679 |
-| SimpleMessage | 84.0 | 2 | 0 | 11904762 |
-| SugaredLogger | 102.0 | 2 | 0 | 9803922 |
-| StructuredFields | 144.0 | 259 | 1 | 6944444 |
-| SugaredLoggerFieldsComplex | 162.0 | 41 | 1 | 6172840 |
-| SecurityNone | 173.0 | 387 | 1 | 5780347 |
-| StructuredFieldsComplex | 295.0 | 708 | 1 | 3389831 |
-| SecurityManual | 413.0 | 508 | 9 | 2421308 |
+| SimpleMessage | 135.0 | 2 | 0 | 7407407 |
+| SugaredLogger | 158.0 | 2 | 0 | 6329114 |
+| SugaredLoggerFields | 163.0 | 8 | 0 | 6134969 |
+| StructuredFields | 232.0 | 259 | 1 | 4310345 |
+| SecurityNone | 298.0 | 387 | 1 | 3355705 |
+| SugaredLoggerFieldsComplex | 313.0 | 41 | 1 | 3194888 |
+| StructuredFieldsComplex | 471.0 | 708 | 1 | 2123142 |
+| SecurityManual | 559.0 | 508 | 9 | 1788909 |
 
 ### Logrus Results
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 1338.0 | 881 | 19 | 747384 |
-| WithFields | 2286.0 | 1897 | 31 | 437445 |
-| Entry | 2839.0 | 2337 | 36 | 352237 |
-| SecurityNone | 2911.0 | 2397 | 37 | 343525 |
-| SecurityManual | 3226.0 | 2581 | 49 | 309981 |
-| WithFieldsComplex | 4813.0 | 4067 | 54 | 207771 |
-| EntryComplex | 5070.0 | 4626 | 55 | 197239 |
+| SimpleMessage | 1343.0 | 881 | 19 | 744602 |
+| WithFields | 2307.0 | 1897 | 31 | 433463 |
+| Entry | 2825.0 | 2337 | 36 | 353982 |
+| SecurityNone | 2891.0 | 2397 | 37 | 345901 |
+| SecurityManual | 3199.0 | 2581 | 49 | 312598 |
+| WithFieldsComplex | 4745.0 | 4067 | 54 | 210748 |
+| EntryComplex | 4992.0 | 4626 | 55 | 200321 |
 
 ## Key Findings
 

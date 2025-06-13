@@ -94,6 +94,7 @@ docs/_build/
 examples/*/main
 examples/*/output.log
 test_output/
+benchmarks/benchmarks
 
 # Local development scripts
 run.sh

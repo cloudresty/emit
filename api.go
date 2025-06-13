@@ -13,11 +13,6 @@ func (InfoLogger) KeyValue(msg string, keysAndValues ...interface{}) {
 	logWithKeyValues(INFO, msg, keysAndValues...)
 }
 
-// ZeroAlloc logs an info message with zero-allocation fields
-func (InfoLogger) ZeroAlloc(msg string, fields ...ZField) {
-	logWithZeroAlloc(INFO, msg, fields...)
-}
-
 // StructuredFields logs an info message with structured fields
 func (InfoLogger) StructuredFields(msg string, fields ...ZField) {
 	if defaultLogger != nil {
@@ -48,11 +43,6 @@ func (ErrorLogger) Field(msg string, fields Fields) {
 // KeyValue logs an error message with key-value pairs
 func (ErrorLogger) KeyValue(msg string, keysAndValues ...interface{}) {
 	logWithKeyValues(ERROR, msg, keysAndValues...)
-}
-
-// ZeroAlloc logs an error message with zero-allocation fields
-func (ErrorLogger) ZeroAlloc(msg string, fields ...ZField) {
-	logWithZeroAlloc(ERROR, msg, fields...)
 }
 
 // StructuredFields logs an error message with ultra-fast structured fields (Phase 5C)
@@ -87,11 +77,6 @@ func (WarnLogger) KeyValue(msg string, keysAndValues ...interface{}) {
 	logWithKeyValues(WARN, msg, keysAndValues...)
 }
 
-// ZeroAlloc logs a warn message with zero-allocation fields
-func (WarnLogger) ZeroAlloc(msg string, fields ...ZField) {
-	logWithZeroAlloc(WARN, msg, fields...)
-}
-
 // StructuredFields logs a warn message with ultra-fast structured fields
 func (WarnLogger) StructuredFields(msg string, fields ...ZField) {
 	if defaultLogger != nil {
@@ -122,11 +107,6 @@ func (DebugLogger) Field(msg string, fields Fields) {
 // KeyValue logs a debug message with key-value pairs
 func (DebugLogger) KeyValue(msg string, keysAndValues ...interface{}) {
 	logWithKeyValues(DEBUG, msg, keysAndValues...)
-}
-
-// ZeroAlloc logs a debug message with zero-allocation fields
-func (DebugLogger) ZeroAlloc(msg string, fields ...ZField) {
-	logWithZeroAlloc(DEBUG, msg, fields...)
 }
 
 // StructuredFields logs a debug message with ultra-fast structured fields (Phase 5C)

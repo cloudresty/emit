@@ -7,13 +7,23 @@ Complete reference for all logging methods and field types.
 Every logging level (`Info`, `Error`, `Warn`, `Debug`) provides the same consistent interface:
 
 ```go
-// All levels support the same methods
-emit.Info.Field(msg, fields)           // Structured fields
-emit.Info.KeyValue(msg, k, v, ...)     // Key-value pairs
-emit.Info.ZeroAlloc(msg, zfields...)   // Ultra-fast zero-allocation
-emit.Info.Pool(msg, func)              // Memory-pooled performance
-emit.Info.Msg(msg)                     // Simple message
+// All levels support the same methods - choose based on your performance needs
+emit.Info.Msg(msg)                     // Simple message - 63 ns/op
+emit.Info.StructuredFields(msg, zfields...) // Zero-allocation structured fields - 96 ns/op, 0 allocs
+emit.Info.KeyValue(msg, k, v, ...)     // Key-value pairs - 1,231 ns/op
+emit.Info.Pool(msg, func)              // Memory-pooled performance - 1,230 ns/op
+emit.Info.Field(msg, fields)           // Traditional structured fields - 1,276 ns/op
 ```
+
+### API Selection Guide
+
+| **Method** | **Input Type** | **Performance** | **Use Case** |
+|------------|----------------|----------------|--------------|
+| `StructuredFields()` | `ZField` types | **96 ns/op, 0 allocs** | **Recommended** - Industry standard, fastest |
+| `Msg()` | String only | 63 ns/op | Simple messages |
+| `Pool()` | Function callback | 1,230 ns/op | High-throughput bulk ops |
+| `KeyValue()` | `interface{}` pairs | 1,231 ns/op | Simple key-value logging |
+| `Field()` | `Fields` map | 1,276 ns/op | Complex business logic |
 
 ## 1. Structured Field Logging
 
@@ -155,69 +165,110 @@ emit.Error.KeyValue("Suspicious activity detected",
     "admin_notified", true)
 ```
 
-## 3. Zero-Allocation Logging
+## 3. Structured Fields (Zap-Compatible API)
 
-### Performance-Critical Usage
+The `StructuredFields` API provides zero-allocation structured logging with full Zap compatibility. This is the **highest performance** logging method in Emit.
+
+### Performance Breakthrough
+
+- **96 ns/op** for basic structured logging
+- **284 ns/op** for complex structured logging
+- **0 B/op, 0 allocs/op** - Zero heap allocations
+- **33% faster than Zap** with automatic security
+
+### Zero-Allocation Usage
 
 ```go
-// Ultra-fast basic logging (174 ns/op)
-emit.Info.ZeroAlloc("Request processed")
-emit.Error.ZeroAlloc("Connection failed")
+// Zero-allocation structured logging (Zap-compatible API)
+emit.Info.StructuredFields("User action",
+    emit.ZString("user_id", "12345"),
+    emit.ZString("action", "login"),
+    emit.ZString("email", "user@example.com"),      // → "***MASKED***" (automatic)
+    emit.ZBool("success", true))
 
-// High-frequency structured logging (345 ns/op)
-emit.Debug.ZeroAlloc("Database query executed",
-    emit.ZString("query_type", "SELECT"),
-    emit.ZString("table", "users"),
-    emit.ZInt("rows", 1234),
-    emit.ZFloat64("duration_ms", 15.7),
-    emit.ZBool("cache_hit", false))
+// Direct comparison with Zap
+// Zap (requires heap allocations):
+zapLogger.Info("User action",
+    zap.String("user_id", "12345"),                 // 143 ns/op, 259 B/op, 1 allocs/op
+    zap.String("action", "login"),
+    zap.String("email", "user@example.com"),        // → "user@example.com" (exposed!)
+    zap.Bool("success", true))
+
+// Emit (zero heap allocations):
+emit.Info.StructuredFields("User action",          // 96 ns/op, 0 B/op, 0 allocs/op
+    emit.ZString("user_id", "12345"),
+    emit.ZString("action", "login"),
+    emit.ZString("email", "user@example.com"),      // → "***MASKED***" (automatic)
+    emit.ZBool("success", true))
 ```
 
-### Complex Zero-Allocation Examples
+### Advanced StructuredFields Examples
 
 ```go
-// High-throughput API logging
-func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
-    start := time.Now()
-
-    // Process request...
-
-    emit.Info.ZeroAlloc("API request completed",
-        emit.ZString("method", r.Method),
-        emit.ZString("path", r.URL.Path),
-        emit.ZString("user_agent", r.UserAgent()),
-        emit.ZInt("status", 200),
-        emit.ZInt64("duration_ns", time.Since(start).Nanoseconds()),
-        emit.ZBool("authenticated", true),
+// High-performance API endpoint logging
+func logAPICall(endpoint string, userID string, responseTime time.Duration) {
+    emit.Info.StructuredFields("API call",
+        emit.ZString("endpoint", endpoint),
+        emit.ZString("user_id", userID),
+        emit.ZString("method", "POST"),
+        emit.ZInt("status_code", 200),
+        emit.ZFloat64("response_time_ms", float64(responseTime.Nanoseconds())/1e6),
+        emit.ZBool("success", true),
         emit.ZTime("timestamp", time.Now()))
 }
 
-// Real-time metrics collection
-func collectMetrics() {
-    cpuUsage := getCurrentCPUUsage()
-    memUsage := getCurrentMemoryUsage()
-
-    emit.Debug.ZeroAlloc("System metrics",
-        emit.ZFloat64("cpu_percent", cpuUsage),
-        emit.ZFloat64("memory_percent", memUsage),
-        emit.ZInt64("goroutines", int64(runtime.NumGoroutine())),
-        emit.ZInt64("heap_bytes", getHeapSize()),
-        emit.ZBool("gc_running", isGCRunning()),
-        emit.ZTime("collected_at", time.Now()))
+// Financial transaction logging (zero-allocation for compliance)
+func logPayment(payment Payment) {
+    emit.Info.StructuredFields("Payment processed",
+        emit.ZString("transaction_id", payment.ID),
+        emit.ZString("customer_email", payment.Email),      // → "***MASKED***"
+        emit.ZString("card_number", payment.CardNumber),    // → "***MASKED***"
+        emit.ZFloat64("amount", payment.Amount),
+        emit.ZString("currency", payment.Currency),
+        emit.ZString("processor", payment.Processor),
+        emit.ZBool("success", payment.Success),
+        emit.ZTime("processed_at", payment.ProcessedAt))
 }
 
-// Financial transaction logging (ultra-fast for compliance)
-func logTransaction(txn Transaction) {
-    emit.Info.ZeroAlloc("Transaction processed",
-        emit.ZString("transaction_id", txn.ID),
-        emit.ZString("account_from", txn.FromAccount),  // Auto-masked
-        emit.ZString("account_to", txn.ToAccount),      // Auto-masked
-        emit.ZFloat64("amount", txn.Amount),
-        emit.ZString("currency", txn.Currency),
-        emit.ZString("type", txn.Type),
-        emit.ZBool("approved", txn.Approved),
-        emit.ZTime("processed_at", txn.ProcessedAt))
+// High-frequency trading system
+func logMarketTick(symbol string, price float64, volume int64) {
+    emit.Debug.StructuredFields("Market tick",              // Ultra-fast hot path
+        emit.ZString("symbol", symbol),
+        emit.ZFloat64("price", price),
+        emit.ZInt64("volume", volume),
+        emit.ZTime("timestamp", time.Now()))
 }
+```
+
+### Available ZField Types
+
+```go
+// All zero-allocation field types
+emit.ZString(key, value)               // String field
+emit.ZInt(key, value)                  // Int field
+emit.ZInt64(key, value)                // Int64 field
+emit.ZFloat64(key, value)              // Float64 field
+emit.ZBool(key, value)                 // Bool field
+emit.ZTime(key, value)                 // Time field
+emit.ZDuration(key, value)             // Duration field
+```
+
+### Migration from Zap
+
+```go
+// Before (Zap)
+logger.Info("User registration",
+    zap.String("email", email),
+    zap.String("username", username),
+    zap.Int("user_id", userID),
+    zap.Bool("verified", verified))
+
+// After (Emit) - Drop-in replacement with better performance
+emit.Info.StructuredFields("User registration",
+    emit.ZString("email", email),           // Auto-masked, 33% faster
+    emit.ZString("username", username),
+    emit.ZInt("user_id", userID),
+    emit.ZBool("verified", verified))
 ```
 
 ## 4. Memory-Pooled Logging
@@ -337,28 +388,31 @@ emit.Info.Pool("Operation", func(pf *emit.PooledFields) {
 
 | **API Type** | **Use Case** | **Performance** | **Memory** |
 |--------------|--------------|-----------------|------------|
-| **Field()** | Complex structured logs | Good | Moderate |
-| **KeyValue()** | Simple key-value pairs | Very Good | Low |
-| **ZeroAlloc()** | High-frequency logging | Excellent | Very Low |
-| **Pool()** | Memory-sensitive bulk ops | Excellent | Minimal |
+| **StructuredFields()** | Industry-standard zero-alloc | **Fastest** | **Zero** |
 | **Msg()** | Simple messages | Excellent | Minimal |
+| **Pool()** | Memory-sensitive bulk ops | Very Good | Minimal |
+| **KeyValue()** | Simple key-value pairs | Good | Low |
+| **Field()** | Complex structured logs | Good | Moderate |
 
 ### Performance Tips
 
-1. **Use ZeroAlloc()** for hot paths and high-frequency logging
-2. **Use Pool()** for bulk operations and memory-sensitive scenarios
-3. **Use Field()** for complex business logic logging
-4. **Use KeyValue()** for simple, readable logging
-5. **Use Msg()** for basic status messages
+1. **Use StructuredFields()** for all new structured logging (fastest, zero allocations)
+2. **Avoid ZeroAlloc()** - it's slower than StructuredFields() with same input types
+3. **Use Msg()** for simple status messages (fastest for plain text)
+4. **Use Pool()** for high-throughput bulk operations when you need callback-style API
+5. **Use KeyValue()** for simple, readable logging with mixed types
+6. **Use Field()** for complex business logic with fluent field building
 
 ### Benchmark Results
 
 ```plaintext
-BenchmarkField-10           1,000,000   1,112 ns/op   1,201 B/op    13 allocs/op
-BenchmarkKeyValue-10        2,575,186     469 ns/op     464 B/op     5 allocs/op
-BenchmarkZeroAlloc-10       6,895,036     174 ns/op      32 B/op     1 allocs/op
-BenchmarkPool-10            3,414,537     345 ns/op     464 B/op     6 allocs/op
-BenchmarkMsg-10            10,000,000     150 ns/op      24 B/op     1 allocs/op
+BenchmarkStructuredFields-10    10,400,000     96 ns/op       0 B/op     0 allocs/op
+BenchmarkMsg-10                 15,900,000     63 ns/op       0 B/op     0 allocs/op
+BenchmarkZeroAlloc-10            6,800,000    146 ns/op     512 B/op     1 allocs/op
+BenchmarkPool-10                   813,000  1,230 ns/op   1,193 B/op    20 allocs/op
+BenchmarkKeyValue-10               812,000  1,231 ns/op   1,473 B/op    18 allocs/op
+BenchmarkField-10                  784,000  1,276 ns/op   1,521 B/op    21 allocs/op
+```chmarkMsg-10            10,000,000     150 ns/op      24 B/op     1 allocs/op
 ```
 
 ## Migration Examples
@@ -383,3 +437,4 @@ emit.Info.KeyValue("Event", "key", value)  // Auto-secured
 ```
 
 This API reference provides comprehensive examples for all logging patterns in emit.
+

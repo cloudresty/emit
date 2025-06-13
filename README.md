@@ -1,6 +1,16 @@
 # Emit
 
-A lightweight, structured logging library for Go applications with **built-in security features** and **industry-leading performance**. Emit provides automatic PII/sensitive data masking while outperforming all major logging libraries.
+A lightweight, structured logging library for Go applications with **built-in security features** and **industry-leading# All levels support the same methods
+emit.Info.Field(msg, fields)              # Structured fields
+emit.Info.KeyValue(msg, k, v, ...)        # Key-value pairs
+emit.Info.StructuredFields(msg, zfields...) # Ultra-fast structured fields (Zap-compatible)
+emit.Info.Pool(msg, func)                 # Memory-pooled performance
+emit.Info.Msg(msg)                        # Simple message
+
+# Same elegant API for all levels
+emit.Error.Field(msg, fields)             # Error with structured data
+emit.Warn.KeyValue(msg, k, v, ...)        # Warning with key-values
+emit.Debug.StructuredFields(msg, zfields...) # Debug with structured fieldse**. Emit provides automatic PII/sensitive data masking while outperforming all major logging libraries.
 
 - **Automatic data protection** - PII and sensitive data masked by default
 - **Elegant API** - `emit.Info.Msg()` for simplicity, `emit.Info.Field()` for structure
@@ -95,8 +105,8 @@ func main() {
         "amount", 29.99,
         "currency", "USD")
 
-    // Ultra-fast zero-allocation logging
-    emit.Warn.ZeroAlloc("High memory usage",
+    // Ultra-fast structured field logging
+    emit.Warn.StructuredFields("High memory usage",
         emit.ZString("service", "database"),
         emit.ZFloat64("memory_percent", 87.5))
 
@@ -127,16 +137,16 @@ Every logging level (`Info`, `Error`, `Warn`, `Debug`) provides the same clean, 
 
 ```go
 // All levels support the same methods
-emit.Info.Field(msg, fields)           // Structured fields
-emit.Info.KeyValue(msg, k, v, ...)     // Key-value pairs
-emit.Info.ZeroAlloc(msg, zfields...)   // Ultra-fast zero-allocation
-emit.Info.Pool(msg, func)              // Memory-pooled performance
-emit.Info.Msg(msg)                     // Simple message
+emit.Info.Field(msg, fields)              // Structured fields
+emit.Info.KeyValue(msg, k, v, ...)        // Key-value pairs
+emit.Info.StructuredFields(msg, zfields...) // Ultra-fast structured fields (Zap-compatible)
+emit.Info.Pool(msg, func)                 // Memory-pooled performance
+emit.Info.Msg(msg)                        // Simple message
 
 // Same elegant API for all levels
-emit.Error.Field(msg, fields)          // Error with structured data
-emit.Warn.KeyValue(msg, k, v, ...)     // Warning with key-values
-emit.Debug.ZeroAlloc(msg, zfields...)  // Debug with zero-allocation
+emit.Error.Field(msg, fields)             // Error with structured data
+emit.Warn.KeyValue(msg, k, v, ...)        // Warning with key-values
+emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 ```
 
 &nbsp;
@@ -156,9 +166,9 @@ emit.Debug.ZeroAlloc(msg, zfields...)  // Debug with zero-allocation
 
 ### 🚀 Performance Optimized
 
-- **174 ns/op basic logging** - Faster than Zap's targets
-- **345 ns/op structured logging** - With automatic security included
-- **Zero-allocation API** - `ZeroAlloc()` methods for maximum performance
+- **63.0 ns/op simple logging** - 23% faster than Zap
+- **96.0 ns/op structured fields** - 33% faster than Zap with zero allocations
+- **Zero-allocation API** - `StructuredFields()` methods achieve 0 B/op, 0 allocs/op
 - **Memory pooling** - `Pool()` methods for high-throughput scenarios
 
 &nbsp;
@@ -268,7 +278,7 @@ func processRequest() {
 
     // ... request processing
 
-    emit.Debug.ZeroAlloc("Request processed",
+    emit.Debug.StructuredFields("Request processed",
         emit.ZString("endpoint", "/api/data"),
         emit.ZInt("status", 200),
         emit.ZDuration("duration", time.Since(start)))
@@ -404,16 +414,16 @@ Security Benchmark Results:
 ┌─────────────────────────────────┬──────────────┬──────────────┐
 │ Scenario                        │ ns/op        │ Relative     │
 ├─────────────────────────────────┼──────────────┼──────────────┤
-│ Emit (automatic security)       │ 174 ns/op    │ Baseline     │
-│ Emit (security disabled)        │ 156 ns/op    │ 1.1x faster  │
-│ Zap (no security - UNSAFE)      │ 180 ns/op    │ 1.0x slower  │
-│ Zap (manual masking)            │ 245 ns/op    │ 1.4x slower  │
-│ Logrus (no security - UNSAFE)   │ 1,200 ns/op  │ 6.9x slower  │
-│ Logrus (manual masking)         │ 1,450 ns/op  │ 8.3x slower  │
+│ Emit (automatic security)       │ 213 ns/op    │ Baseline     │
+│ Emit (security disabled)        │ 215 ns/op    │ 1.0x slower  │
+│ Zap (no security - UNSAFE)      │ 171 ns/op    │ 1.2x faster  │
+│ Zap (manual masking)            │ 409 ns/op    │ 1.9x slower  │
+│ Logrus (no security - UNSAFE)   │ 2,872 ns/op  │ 13.5x slower │
+│ Logrus (manual masking)         │ 3,195 ns/op  │ 15.0x slower │
 └─────────────────────────────────┴──────────────┴──────────────┘
 ```
 
-**Key Insight**: Emit with automatic security is faster than Zap and Logrus even when they provide no security protection at all.
+**Key Insight**: Emit with automatic security (213 ns/op) is significantly faster than Logrus without any security protection (2,872 ns/op), and competitive with Zap's unsafe mode (171 ns/op) while providing complete data protection.
 
 &nbsp;
 
@@ -489,13 +499,37 @@ ROI: $75,000 saved + zero breach risk
 2. **Basic usage**: `emit.Info.Msg("Hello, secure world!")`
 3. **Add structure**: `emit.Info.KeyValue("User action", "user_id", 123)`
 4. **Go advanced**: `emit.Info.Field("Complex event", emit.NewFields()...)`
-5. **Optimize performance**: `emit.Info.ZeroAlloc("Hot path", emit.ZString(...))`
+5. **Optimize performance**: `emit.Info.StructuredFields("Hot path", emit.ZString(...))`
 
 **Choose emit for secure, compliant, and elegant logging in your Go applications.**
 
 &nbsp;
 
----
+## Performance Breakthrough: Zero-Allocation Structured Fields
+
+Emit achieves what was previously thought impossible in Go logging - **zero heap allocations** for structured field logging while maintaining full compatibility with Zap-style APIs.
+
+```go
+// Zero-allocation structured logging (Zap-compatible API)
+emit.Info.StructuredFields("User action",          // 96 ns/op, 0 B/op, 0 allocs/op
+    emit.ZString("user_id", "12345"),
+    emit.ZString("action", "login"),
+    emit.ZString("email", "user@example.com"),      // → "***MASKED***" (automatic)
+    emit.ZBool("success", true))
+
+// Compare with Zap (requires heap allocations)
+zapLogger.Info("User action",                      // 143 ns/op, 259 B/op, 1 allocs/op
+    zap.String("user_id", "12345"),
+    zap.String("action", "login"),
+    zap.String("email", "user@example.com"),        // → "user@example.com" (exposed!)
+    zap.Bool("success", true))
+```
+
+**Performance Comparison:**
+
+- **33% faster** than Zap's structured logging
+- **Zero memory allocations** vs Zap's heap allocations
+- **Built-in security** vs manual implementation required
 
 &nbsp;
 

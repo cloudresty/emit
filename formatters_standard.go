@@ -91,3 +91,60 @@ func (l *Logger) logPlain(level LogLevel, message string, fields map[string]any)
 		GetUltraFastTimestamp()[:19],
 		colorCode, severity, resetCode, l.component, l.version, finalMessage)
 }
+
+// buildSimpleJSONUltraFast - Ultra-fast JSON builder for simple messages
+func (l *Logger) buildSimpleJSONUltraFast(buf []byte, level LogLevel, message string) int {
+	timestamp := GetUltraFastTimestamp()
+	levelStr := level.StringFast()
+
+	pos := 0
+	pos += copy(buf[pos:], `{"timestamp":"`)
+	pos += copy(buf[pos:], timestamp)
+	pos += copy(buf[pos:], `","level":"`)
+	pos += copy(buf[pos:], levelStr)
+	pos += copy(buf[pos:], `","msg":"`)
+	pos += copy(buf[pos:], message)
+	pos += copy(buf[pos:], `"`)
+
+	if l.component != "" {
+		pos += copy(buf[pos:], `,"component":"`)
+		pos += copy(buf[pos:], l.component)
+		pos += copy(buf[pos:], `"`)
+	}
+
+	if l.version != "" {
+		pos += copy(buf[pos:], `,"version":"`)
+		pos += copy(buf[pos:], l.version)
+		pos += copy(buf[pos:], `"`)
+	}
+
+	pos += copy(buf[pos:], "}\n")
+	return pos
+}
+
+// buildSimplePlainUltraFast - Ultra-fast plain text builder for simple messages
+func (l *Logger) buildSimplePlainUltraFast(buf []byte, level LogLevel, message string) int {
+	timestamp := GetUltraFastTimestamp()
+	levelStr := level.StringFast()
+
+	pos := 0
+	pos += copy(buf[pos:], timestamp[:19])
+	pos += copy(buf[pos:], " | ")
+	pos += copy(buf[pos:], levelStr)
+
+	// Pad level to 7 characters for alignment
+	for len(levelStr) < 7 {
+		pos += copy(buf[pos:], " ")
+		levelStr += " "
+	}
+
+	pos += copy(buf[pos:], " | ")
+	pos += copy(buf[pos:], l.component)
+	pos += copy(buf[pos:], " ")
+	pos += copy(buf[pos:], l.version)
+	pos += copy(buf[pos:], ": ")
+	pos += copy(buf[pos:], message)
+	pos += copy(buf[pos:], "\n")
+
+	return pos
+}

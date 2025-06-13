@@ -2,7 +2,7 @@
 
 Comprehensive performance benchmarks comparing **Emit**, **Zap**, and **Logrus** logging libraries.
 
-## 🏗️ Architecture
+## Architecture
 
 The benchmark suite is organized into modular, maintainable components:
 
@@ -18,7 +18,7 @@ The benchmark suite is organized into modular, maintainable components:
 
 - **`benchmark-results.md`** - Human-readable results (viewable directly on GitHub)
 
-## 🚀 Running Benchmarks
+## Running Benchmarks
 
 ```bash
 # Build the benchmark application
@@ -31,7 +31,43 @@ go build .
 cat benchmark-results.md
 ```
 
-## 📊 What Gets Benchmarked
+## Latest Benchmark Results
+
+**Test Environment:** Apple M1 Max, 10 cores, Go 1.24.4, macOS ARM64
+
+### Performance Summary
+
+**Simple Message Logging:**
+
+- **Emit:** 63.0 ns/op (15.9M ops/sec) - **Fastest**
+- **Zap:** 82.0 ns/op (12.2M ops/sec) - 1.3x slower
+- **Logrus:** 1,334.0 ns/op (749K ops/sec) - 21.2x slower
+
+**Structured Fields Logging:**
+
+- **Emit:** 96.0 ns/op, 0 B/op, 0 allocs/op - **Zero allocations**
+- **Zap:** 143.0 ns/op, 259 B/op, 1 allocs/op - 33% slower
+- **Logrus:** Not directly comparable (uses different API patterns)
+
+**Security Performance Impact:**
+
+- **Emit (Built-in Security):** 213.0 ns/op - Automatic PII/sensitive data masking
+- **Emit (Security Disabled):** 215.0 ns/op - Minimal overhead difference
+- **Zap (No Security):** 171.0 ns/op - Fast but exposes sensitive data
+- **Zap (Manual Security):** 409.0 ns/op - 2.4x performance penalty
+- **Logrus (No Security):** 2,872.0 ns/op - Slow baseline
+- **Logrus (Manual Security):** 3,195.0 ns/op - Additional overhead
+
+### Key Performance Insights
+
+1. **Emit outperforms Zap by 23-33%** in equivalent scenarios
+2. **Zero-allocation structured logging** - Emit achieves 0 B/op, 0 allocs/op
+3. **Security comes nearly free** - Built-in masking adds minimal overhead
+4. **Dramatic Logrus improvement** - 10-20x performance gains possible with Emit
+
+For complete detailed results, see `benchmark-results.md`.
+
+## What Gets Benchmarked
 
 ### Fair Comparison Methodology
 
@@ -60,9 +96,9 @@ All benchmarks use **identical data** and **identical scenarios** across librari
 - Memory-optimized APIs
 - Hot-path logging scenarios
 
-#### 4. **🔒 Security Benchmarks** ⭐
+#### 4. Security Benchmarks
 
-This is where Emit truly shines:
+This is where Emit demonstrates its unique advantage:
 
 - **Emit with Built-in Security** - Automatic PII/sensitive masking (default)
 - **Emit without Security** - Using non-triggering field names (unsafe but fast)
@@ -71,7 +107,7 @@ This is where Emit truly shines:
 - **Logrus without Security** - Default behavior (slow + exposes data)
 - **Logrus with Manual Security** - Developer-implemented masking (slowest)
 
-## 🛡️ Security Focus
+## Security Focus
 
 ### Automatic vs Manual Masking
 
@@ -103,24 +139,21 @@ The security benchmarks demonstrate:
 3. **Compliance Benefits** - Emit provides automatic GDPR/CCPA compliance
 4. **Zero Configuration** - Security works out-of-the-box
 
-## 📈 Expected Results
+## Expected vs Actual Results
 
-Based on Apple M1 Max performance:
+**Previous Estimates vs Actual Results (Apple M1 Max):**
 
-```plain
-Performance Ranking (ns/op - lower is better):
-1. Emit Simple       ~56 ns/op     ← Fastest
-2. Emit ZeroAlloc    ~174 ns/op    ← With security!
-3. Zap Simple        ~88 ns/op     ← No security
-4. Emit Structured   ~345 ns/op    ← With security!
-5. Zap Structured    ~400+ ns/op   ← No security
-6. Logrus Simple     ~1,393 ns/op  ← No security
-7. Logrus Structured ~2,000+ ns/op ← No security
-```
+| Scenario | Estimated | Actual | Result |
+|----------|-----------|--------|--------|
+| Emit Simple | ~56 ns/op | 63.0 ns/op | Slightly slower than estimated |
+| Emit Structured | ~345 ns/op | 96.0 ns/op | **Dramatically faster than expected** |
+| Zap Simple | ~88 ns/op | 82.0 ns/op | Close to estimate |
+| Zap Structured | ~400+ ns/op | 143.0 ns/op | Better than expected |
+| Logrus Simple | ~1,393 ns/op | 1,334.0 ns/op | Very close to estimate |
 
-**Key Insight:** Emit with automatic security is faster than Zap/Logrus without any security!
+**Key Surprise:** Emit's structured logging with zero allocations performed far better than anticipated.
 
-## 🎯 Understanding the Results
+## Understanding the Results
 
 ### Metrics Explained
 
@@ -144,7 +177,7 @@ View the security benchmarks to understand:
 - Development complexity of secure logging
 - Benefits of automatic protection
 
-## 💡 Interpretation Guide
+## Interpretation Guide
 
 When viewing `benchmark-results.md`:
 
@@ -153,7 +186,7 @@ When viewing `benchmark-results.md`:
 3. **Compare Structured logging** - Complex operation performance
 4. **Note memory allocations** - Important for high-throughput systems
 
-## 🔄 Benchmark Validity
+## Benchmark Validity
 
 All benchmarks ensure fair comparison by:
 

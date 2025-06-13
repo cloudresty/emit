@@ -30,9 +30,9 @@ func (l *Logger) log(level LogLevel, message string, fields map[string]any) {
 		return
 	}
 
-	// This bypasses all security processing overhead for simple logging
+	// Ultra-fast path for simple messages (no fields) - OPTIMIZED FOR SPEED
 	if len(fields) == 0 {
-		l.logSimple(level, message)
+		l.logSimpleUltraFast(level, message)
 		return
 	}
 
@@ -45,14 +45,20 @@ func (l *Logger) log(level LogLevel, message string, fields map[string]any) {
 	}
 }
 
-// logSimple writes a simple log entry without fields (optimized fast path)
-func (l *Logger) logSimple(level LogLevel, message string) {
-	l.logSimpleExtremelyFast(level, message)
-}
+// logSimpleUltraFast - Specialized simple message logger
+func (l *Logger) logSimpleUltraFast(level LogLevel, message string) {
+	// Use smallest possible stack buffer for simple messages
+	var stackBuf [128]byte
+	var pos int
 
-// logSimpleExtremelyFast provides ultra-fast simple message logging
-func (l *Logger) logSimpleExtremelyFast(level LogLevel, message string) {
-	l.logZeroBlazing(level, message)
+	if l.format == JSON_FORMAT {
+		pos = l.buildSimpleJSONUltraFast(stackBuf[:], level, message)
+	} else {
+		pos = l.buildSimplePlainUltraFast(stackBuf[:], level, message)
+	}
+
+	// Single write operation - most critical optimization
+	l.writer.Write(stackBuf[:pos])
 }
 
 // InfoStructured logs at INFO level with structured fields optimization

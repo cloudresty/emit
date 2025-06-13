@@ -167,13 +167,3 @@ func ZTime(key string, value time.Time) TimeZField {
 func ZDuration(key string, value time.Duration) DurationZField {
 	return DurationZField{Key: key, Value: value}
 }
-
-// logZero performs zero-allocation logging
-func (l *Logger) logZero(level LogLevel, message string, fields ...ZField) {
-	if level < l.level {
-		return
-	}
-
-	// Route to the zero-allocation logging
-	l.logZeroBlazing(level, message, fields...)
-}

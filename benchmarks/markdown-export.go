@@ -38,7 +38,7 @@ func exportToMarkdown(report BenchmarkReport, filename string) error {
 
 	// Performance summary
 	fmt.Fprintf(file, "## Performance Summary\n\n")
-	fmt.Fprintf(file, "### Simple Message Logging\n\n")
+	fmt.Fprintf(file, "### Structured Field Logging Performance\n\n")
 	writeSimpleMessageComparison(file, resultsByLibrary)
 
 	fmt.Fprintf(file, "### Security Benchmark Comparison\n\n")
@@ -65,29 +65,48 @@ func exportToMarkdown(report BenchmarkReport, filename string) error {
 }
 
 func writeSimpleMessageComparison(file *os.File, resultsByLibrary map[string][]BenchmarkResult) {
-	fmt.Fprintf(file, "| Library | ns/op | MB/s | Relative Performance |\n")
-	fmt.Fprintf(file, "|---------|-------|------|---------------------|\n")
+	fmt.Fprintf(file, "| Library | ns/op | B/op | allocs/op | Relative Performance |\n")
+	fmt.Fprintf(file, "|---------|-------|------|-----------|---------------------|\n")
 
-	// Find simple message benchmarks
-	var simpleResults []BenchmarkResult
-	for _, results := range resultsByLibrary {
+	// Find the best representative benchmark for each library
+	var primaryResults []BenchmarkResult
+
+	// For each library, find the primary benchmark
+	for library, results := range resultsByLibrary {
+		var selectedResult *BenchmarkResult
+
 		for _, result := range results {
-			if strings.Contains(result.TestName, "SimpleMessage") {
-				simpleResults = append(simpleResults, result)
+			// For Emit, use StructuredFields as the primary benchmark (zero-alloc structured logging)
+			if library == "emit" && result.TestName == "Emit_StructuredFields" {
+				selectedResult = &result
+				break
 			}
+			// For Zap, use StructuredFields as comparable
+			if library == "zap" && result.TestName == "Zap_StructuredFields" {
+				selectedResult = &result
+				break
+			}
+			// For Logrus, use SimpleMessage (no StructuredFields equivalent)
+			if library == "logrus" && result.TestName == "Logrus_SimpleMessage" {
+				selectedResult = &result
+				break
+			}
+		}
+
+		if selectedResult != nil {
+			primaryResults = append(primaryResults, *selectedResult)
 		}
 	}
 
 	// Sort by performance (ns/op)
-	sort.Slice(simpleResults, func(i, j int) bool {
-		return simpleResults[i].NsPerOp < simpleResults[j].NsPerOp
+	sort.Slice(primaryResults, func(i, j int) bool {
+		return primaryResults[i].NsPerOp < primaryResults[j].NsPerOp
 	})
 
-	if len(simpleResults) > 0 {
-		fastest := simpleResults[0].NsPerOp
-		for _, result := range simpleResults {
+	if len(primaryResults) > 0 {
+		fastest := primaryResults[0].NsPerOp
+		for _, result := range primaryResults {
 			relative := result.NsPerOp / fastest
-			mbPerSec := 1000.0 / result.NsPerOp * 1000 // Rough estimate
 
 			var relativeStr string
 			if relative == 1.0 {
@@ -96,8 +115,8 @@ func writeSimpleMessageComparison(file *os.File, resultsByLibrary map[string][]B
 				relativeStr = fmt.Sprintf("%.1fx slower", relative)
 			}
 
-			fmt.Fprintf(file, "| **%s** | %.1f | %.1f | %s |\n",
-				strings.Title(result.Library), result.NsPerOp, mbPerSec, relativeStr)
+			fmt.Fprintf(file, "| **%s** | %.1f | %d | %d | %s |\n",
+				strings.Title(result.Library), result.NsPerOp, result.BytesPerOp, result.AllocsPerOp, relativeStr)
 		}
 	}
 	fmt.Fprintf(file, "\n")

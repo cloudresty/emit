@@ -9,7 +9,7 @@ import (
 var (
 
 	// Stack-based buffer for ultimate performance
-	phase5bBuffer = [256]byte{}
+	phase5bBuffer = [1024]byte{} // Increased buffer size for complex structured fields
 
 	// Pre-computed JSON components for zero runtime cost
 	structureJSONPrefix = []byte(`{"timestamp":"`)
@@ -31,7 +31,7 @@ func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...Z
 	}
 
 	// Use stack buffer for ZERO heap allocations
-	buf := (*[256]byte)(unsafe.Pointer(&phase5bBuffer[0]))
+	buf := (*[1024]byte)(unsafe.Pointer(&phase5bBuffer[0]))
 	pos := 0
 
 	// Copy JSON prefix directly

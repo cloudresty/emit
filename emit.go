@@ -43,12 +43,6 @@ func logWithKeyValues(level LogLevel, message string, keysAndValues ...interface
 	}
 }
 
-func logWithZeroAlloc(level LogLevel, message string, fields ...ZField) {
-	if defaultLogger != nil {
-		defaultLogger.logZero(level, message, fields...)
-	}
-}
-
 func logWithPool(level LogLevel, message string, fn func(*PooledFields)) {
 	if defaultLogger != nil {
 		pf := NewPooledFields()

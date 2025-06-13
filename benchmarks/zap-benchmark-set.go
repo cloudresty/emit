@@ -35,7 +35,7 @@ func (z ZapBenchmarkSet) GetBenchmarks() []BenchmarkFunc {
 // Simple message logging benchmarks
 func (z ZapBenchmarkSet) BenchmarkSimpleMessage(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for i := 0; i < b.N; i++ {
 		zapLogger.Info("Simple log message")
 	}
 }
