@@ -2,7 +2,11 @@
 
 Complete guide for migrating from other logging libraries to emit's elegant API.
 
+&nbsp;
+
 ## Why Migrate to Emit?
+
+&nbsp;
 
 ### The Problem with Traditional Loggers
 
@@ -25,6 +29,8 @@ logger.Info("Payment",
     zap.String("card", maskSensitive(card)),    // Manual masking
     zap.Int("amount", amount))
 ```
+
+&nbsp;
 
 ### The Emit Solution
 
@@ -50,7 +56,11 @@ emit.Info.KeyValue("Payment processed",
     "amount", amount)          // Safe
 ```
 
+&nbsp;
+
 ## Migration from Standard Log Package
+
+&nbsp;
 
 ### Before (Unsafe)
 
@@ -116,6 +126,8 @@ func main() {
 | `log.Printf("Error: %v", err)` | `emit.Error.KeyValue("Error occurred", "error", err)` |
 | `log.Printf("Count: %d", count)` | `emit.Info.KeyValue("Count", "count", count)` |
 | `log.Fatal(err)` | `emit.Error.Msg(err.Error()); os.Exit(1)` |
+
+&nbsp;
 
 ## Migration from Logrus
 
@@ -200,6 +212,8 @@ func main() {
 | `logrus.WithFields(fields)` | `emit.Info.Field("message", emit.NewFields()...)` |
 | `logrus.Error(err)` | `emit.Error.KeyValue("Error", "error", err)` |
 | `logrus.SetLevel(logrus.DebugLevel)` | `emit.SetLevel("debug")` |
+
+&nbsp;
 
 ## Migration from Zap
 
@@ -346,6 +360,8 @@ func logPayment(payment Payment) {
 }
 ```
 
+&nbsp;
+
 ## Migration from Zerolog
 
 ### Before
@@ -404,6 +420,8 @@ func main() {
             String("card", cardNumber))          // Auto-masked
 }
 ```
+
+&nbsp;
 
 ## Advanced Migration Examples
 
@@ -501,6 +519,8 @@ func bulkOperation(items []Item) {
 }
 ```
 
+&nbsp;
+
 ## Migration Checklist
 
 ### Phase 1: Setup
@@ -535,6 +555,8 @@ func bulkOperation(items []Item) {
 - [ ] Set appropriate log levels for production
 - [ ] Monitor performance improvements
 
+&nbsp;
+
 ## Migration Benefits Summary
 
 ### Security Improvements
@@ -564,6 +586,8 @@ func bulkOperation(items []Item) {
 - ✅ **Environment-aware** - Automatic adaptation
 - ✅ **Zero dependencies** - Minimal attack surface
 - ✅ **Production ready** - Battle-tested performance
+
+&nbsp;
 
 ## Get Started Today
 

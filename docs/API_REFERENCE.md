@@ -2,17 +2,19 @@
 
 Complete reference for all logging methods and field types.
 
+&nbsp;
+
 ## Elegant API Overview
 
 Every logging level (`Info`, `Error`, `Warn`, `Debug`) provides the same consistent interface:
 
 ```go
 // All levels support the same methods - choose based on your performance needs
-emit.Info.Msg(msg)                     // Simple message - 63 ns/op
+emit.Info.Msg(msg)                          // Simple message - 63 ns/op
+emit.Info.Field(msg, fields)                // Traditional structured fields - 1,276 ns/op
 emit.Info.StructuredFields(msg, zfields...) // Zero-allocation structured fields - 96 ns/op, 0 allocs
-emit.Info.KeyValue(msg, k, v, ...)     // Key-value pairs - 1,231 ns/op
-emit.Info.Pool(msg, func)              // Memory-pooled performance - 1,230 ns/op
-emit.Info.Field(msg, fields)           // Traditional structured fields - 1,276 ns/op
+emit.Info.KeyValue(msg, k, v, ...)          // Key-value pairs - 1,231 ns/op
+emit.Info.Pool(msg, func)                   // Memory-pooled performance - 1,230 ns/op
 ```
 
 ### API Selection Guide
@@ -24,6 +26,8 @@ emit.Info.Field(msg, fields)           // Traditional structured fields - 1,276 
 | `Pool()` | Function callback | 1,230 ns/op | High-throughput bulk ops |
 | `KeyValue()` | `interface{}` pairs | 1,231 ns/op | Simple key-value logging |
 | `Field()` | `Fields` map | 1,276 ns/op | Complex business logic |
+
+&nbsp;
 
 ## 1. Structured Field Logging
 
@@ -108,6 +112,8 @@ emit.Info.Field("User login attempt", loginAttempt)
 emit.Info.Field("Password reset initiated", passwordReset)
 ```
 
+&nbsp;
+
 ## 2. Key-Value Pair Logging
 
 ### Simple Usage
@@ -165,6 +171,8 @@ emit.Error.KeyValue("Suspicious activity detected",
     "admin_notified", true)
 ```
 
+&nbsp;
+
 ## 3. Structured Fields (Zap-Compatible API)
 
 The `StructuredFields` API provides zero-allocation structured logging with full Zap compatibility. This is the **highest performance** logging method in Emit.
@@ -195,7 +203,7 @@ zapLogger.Info("User action",
     zap.Bool("success", true))
 
 // Emit (zero heap allocations):
-emit.Info.StructuredFields("User action",          // 96 ns/op, 0 B/op, 0 allocs/op
+emit.Info.StructuredFields("User action",           // 96 ns/op, 0 B/op, 0 allocs/op
     emit.ZString("user_id", "12345"),
     emit.ZString("action", "login"),
     emit.ZString("email", "user@example.com"),      // → "***MASKED***" (automatic)
@@ -271,6 +279,8 @@ emit.Info.StructuredFields("User registration",
     emit.ZBool("verified", verified))
 ```
 
+&nbsp;
+
 ## 4. Memory-Pooled Logging
 
 ### High-Throughput Applications
@@ -337,21 +347,23 @@ emit.Warn.Pool("Container resource limit exceeded", func(pf *emit.PooledFields) 
 })
 ```
 
+&nbsp;
+
 ## Field Types Reference
 
 ### All Available Types
 
 ```go
 fields := emit.NewFields().
-    String("name", "value").                          // String values
-    Int("count", 42).                                // Integer values
-    Int64("big_number", 1234567890).                 // 64-bit integers
-    Float64("percentage", 95.7).                     // Floating point
-    Bool("enabled", true).                           // Boolean values
-    Time("timestamp", time.Now()).                   // Time (RFC3339)
-    Duration("elapsed", 50*time.Millisecond).        // Duration
+    String("name", "value").                            // String values
+    Int("count", 42).                                   // Integer values
+    Int64("big_number", 1234567890).                    // 64-bit integers
+    Float64("percentage", 95.7).                        // Floating point
+    Bool("enabled", true).                              // Boolean values
+    Time("timestamp", time.Now()).                      // Time (RFC3339)
+    Duration("elapsed", 50*time.Millisecond).           // Duration
     Error("error", fmt.Errorf("something went wrong")). // Error values
-    Any("metadata", complexStruct)                   // Any type (JSON)
+    Any("metadata", complexStruct)                      // Any type (JSON)
 ```
 
 ### Zero-Allocation Types
@@ -381,6 +393,8 @@ emit.Info.Pool("Operation", func(pf *emit.PooledFields) {
        Error("err", someError)
 })
 ```
+
+&nbsp;
 
 ## Performance Guidelines
 
@@ -412,8 +426,10 @@ BenchmarkZeroAlloc-10            6,800,000    146 ns/op     512 B/op     1 alloc
 BenchmarkPool-10                   813,000  1,230 ns/op   1,193 B/op    20 allocs/op
 BenchmarkKeyValue-10               812,000  1,231 ns/op   1,473 B/op    18 allocs/op
 BenchmarkField-10                  784,000  1,276 ns/op   1,521 B/op    21 allocs/op
-```chmarkMsg-10            10,000,000     150 ns/op      24 B/op     1 allocs/op
+BenchmarkMsg-10                 10,000,000     150 ns/op      24 B/op     1 allocs/op
 ```
+
+&nbsp;
 
 ## Migration Examples
 
@@ -435,6 +451,3 @@ logger.Info("Event", zap.String("key", value))
 // ↓ Becomes
 emit.Info.KeyValue("Event", "key", value)  // Auto-secured
 ```
-
-This API reference provides comprehensive examples for all logging patterns in emit.
-

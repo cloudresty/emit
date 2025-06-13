@@ -1,16 +1,6 @@
 # Emit
 
-A lightweight, structured logging library for Go applications with **built-in security features** and **industry-leading# All levels support the same methods
-emit.Info.Field(msg, fields)              # Structured fields
-emit.Info.KeyValue(msg, k, v, ...)        # Key-value pairs
-emit.Info.StructuredFields(msg, zfields...) # Ultra-fast structured fields (Zap-compatible)
-emit.Info.Pool(msg, func)                 # Memory-pooled performance
-emit.Info.Msg(msg)                        # Simple message
-
-# Same elegant API for all levels
-emit.Error.Field(msg, fields)             # Error with structured data
-emit.Warn.KeyValue(msg, k, v, ...)        # Warning with key-values
-emit.Debug.StructuredFields(msg, zfields...) # Debug with structured fieldse**. Emit provides automatic PII/sensitive data masking while outperforming all major logging libraries.
+A lightweight, structured logging library for Go applications with **built-in security features** and **industry-leading** performance. Emit provides automatic PII/sensitive data masking while outperforming all major logging libraries.
 
 - **Automatic data protection** - PII and sensitive data masked by default
 - **Elegant API** - `emit.Info.Msg()` for simplicity, `emit.Info.Field()` for structure
@@ -28,7 +18,7 @@ emit.Debug.StructuredFields(msg, zfields...) # Debug with structured fieldse**. 
 emit.Info.Field("Payment processed",
     emit.NewFields().
         String("transaction_id", "txn_abc123").
-        String("card_number", "4111-1111-1111-1111").  // Auto-masked
+        String("card_number", "4111-1111-1111-1111").   // Auto-masked
         String("cardholder", "John Doe").               // Auto-masked
         Float64("amount", 99.99).
         String("currency", "USD").
@@ -137,11 +127,11 @@ Every logging level (`Info`, `Error`, `Warn`, `Debug`) provides the same clean, 
 
 ```go
 // All levels support the same methods
-emit.Info.Field(msg, fields)              // Structured fields
-emit.Info.KeyValue(msg, k, v, ...)        // Key-value pairs
+emit.Info.Msg(msg)                          // Simple message
+emit.Info.Field(msg, fields)                // Structured fields
 emit.Info.StructuredFields(msg, zfields...) // Ultra-fast structured fields (Zap-compatible)
-emit.Info.Pool(msg, func)                 // Memory-pooled performance
-emit.Info.Msg(msg)                        // Simple message
+emit.Info.KeyValue(msg, k, v, ...)          // Key-value pairs
+emit.Info.Pool(msg, func)                   // Memory-pooled performance
 
 // Same elegant API for all levels
 emit.Error.Field(msg, fields)             // Error with structured data
