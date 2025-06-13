@@ -1,6 +1,6 @@
 # Benchmark Results
 
-**Generated:** 2025-06-13T12:54:39+01:00
+**Generated:** 2025-06-13T21:15:25+01:00
 
 ## System Information
 
@@ -18,20 +18,20 @@
 
 | Library | ns/op | B/op | allocs/op | Relative Performance |
 |---------|-------|------|-----------|---------------------|
-| **Emit** | 95.0 | 0 | 0 | **Fastest** ✅ |
-| **Zap** | 232.0 | 259 | 1 | 2.4x slower |
-| **Logrus** | 1343.0 | 881 | 19 | 14.1x slower |
+| **Zap** | 182.0 | 259 | 1 | **Fastest** ✅ |
+| **Emit** | 307.0 | 1024 | 1 | 1.7x slower |
+| **Logrus** | 1438.0 | 881 | 19 | 7.9x slower |
 
 ### Security Benchmark Comparison
 
 | Library | Security Type | ns/op | Performance Cost | Data Protection |
 |---------|---------------|-------|------------------|------------------|
-| **Emit** | **Built-in Automatic** | 146.0 | **No overhead** | ✅ **100% Protected** |
-| **Emit** | Disabled (Unsafe) | 145.0 | Fastest | ❌ **Exposed** |
-| **Zap** | **None (Default)** | 298.0 | No cost | ❌ **Fully Exposed** |
-| **Zap** | Manual Implementation | 559.0 | High overhead | ✅ Protected |
-| **Logrus** | **None (Default)** | 2891.0 | No cost | ❌ **Fully Exposed** |
-| **Logrus** | Manual Implementation | 3199.0 | High overhead | ✅ Protected |
+| **Emit** | **Built-in Automatic** | 389.0 | **No overhead** | ✅ **100% Protected** |
+| **Emit** | Disabled (Unsafe) | 398.0 | Fastest | ❌ **Exposed** |
+| **Zap** | **None (Default)** | 207.0 | No cost | ❌ **Fully Exposed** |
+| **Zap** | Manual Implementation | 476.0 | High overhead | ✅ Protected |
+| **Logrus** | **None (Default)** | 3012.0 | No cost | ❌ **Fully Exposed** |
+| **Logrus** | Manual Implementation | 3254.0 | High overhead | ✅ Protected |
 
 ### Performance vs Security Trade-offs
 
@@ -50,43 +50,43 @@
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 83.0 | 128 | 1 | 12048193 |
-| StructuredFields | 95.0 | 0 | 0 | 10526316 |
-| StructuredFieldsWithData | 95.0 | 0 | 0 | 10526316 |
-| SecurityDisabled | 145.0 | 0 | 0 | 6896552 |
-| SecurityBuiltIn | 146.0 | 0 | 0 | 6849315 |
-| StructuredFieldsComplex | 278.0 | 0 | 0 | 3597122 |
-| Pool | 1266.0 | 1193 | 20 | 789889 |
-| KeyValue | 1268.0 | 1473 | 18 | 788644 |
-| Field | 1318.0 | 1521 | 21 | 758725 |
-| PoolComplex | 3015.0 | 2460 | 42 | 331675 |
-| KeyValueComplex | 3210.0 | 3037 | 38 | 311526 |
-| FieldComplex | 3245.0 | 3404 | 46 | 308166 |
+| SimpleMessage | 135.0 | 256 | 1 | 7407407 |
+| StructuredFields | 307.0 | 1024 | 1 | 3257329 |
+| StructuredFieldsWithData | 307.0 | 1024 | 1 | 3257329 |
+| SecurityBuiltIn | 389.0 | 1024 | 1 | 2570694 |
+| SecurityDisabled | 398.0 | 1024 | 1 | 2512563 |
+| StructuredFieldsComplex | 514.0 | 1024 | 1 | 1945525 |
+| Pool | 1239.0 | 1193 | 20 | 807103 |
+| KeyValue | 1242.0 | 1473 | 18 | 805153 |
+| Field | 1263.0 | 1521 | 21 | 791766 |
+| PoolComplex | 3009.0 | 2460 | 42 | 332336 |
+| KeyValueComplex | 3148.0 | 3037 | 38 | 317662 |
+| FieldComplex | 3152.0 | 3404 | 46 | 317259 |
 
 ### Zap Results
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 135.0 | 2 | 0 | 7407407 |
-| SugaredLogger | 158.0 | 2 | 0 | 6329114 |
-| SugaredLoggerFields | 163.0 | 8 | 0 | 6134969 |
-| StructuredFields | 232.0 | 259 | 1 | 4310345 |
-| SecurityNone | 298.0 | 387 | 1 | 3355705 |
-| SugaredLoggerFieldsComplex | 313.0 | 41 | 1 | 3194888 |
-| StructuredFieldsComplex | 471.0 | 708 | 1 | 2123142 |
-| SecurityManual | 559.0 | 508 | 9 | 1788909 |
+| SimpleMessage | 97.0 | 2 | 0 | 10309278 |
+| SugaredLoggerFields | 99.0 | 8 | 0 | 10101010 |
+| SugaredLogger | 120.0 | 2 | 0 | 8333333 |
+| StructuredFields | 182.0 | 259 | 1 | 5494505 |
+| SugaredLoggerFieldsComplex | 195.0 | 41 | 1 | 5128205 |
+| SecurityNone | 207.0 | 387 | 1 | 4830918 |
+| StructuredFieldsComplex | 343.0 | 708 | 1 | 2915452 |
+| SecurityManual | 476.0 | 508 | 9 | 2100840 |
 
 ### Logrus Results
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 1343.0 | 881 | 19 | 744602 |
-| WithFields | 2307.0 | 1897 | 31 | 433463 |
-| Entry | 2825.0 | 2337 | 36 | 353982 |
-| SecurityNone | 2891.0 | 2397 | 37 | 345901 |
-| SecurityManual | 3199.0 | 2581 | 49 | 312598 |
-| WithFieldsComplex | 4745.0 | 4067 | 54 | 210748 |
-| EntryComplex | 4992.0 | 4626 | 55 | 200321 |
+| SimpleMessage | 1438.0 | 881 | 19 | 695410 |
+| WithFields | 2498.0 | 1897 | 31 | 400320 |
+| Entry | 2912.0 | 2337 | 36 | 343407 |
+| SecurityNone | 3012.0 | 2397 | 37 | 332005 |
+| SecurityManual | 3254.0 | 2581 | 49 | 307314 |
+| WithFieldsComplex | 4962.0 | 4067 | 54 | 201532 |
+| EntryComplex | 5020.0 | 4626 | 55 | 199203 |
 
 ## Key Findings
 

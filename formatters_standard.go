@@ -98,26 +98,80 @@ func (l *Logger) buildSimpleJSONUltraFast(buf []byte, level LogLevel, message st
 	levelStr := level.StringFast()
 
 	pos := 0
+
+	// Check buffer space as we build to prevent overflow
+	if pos+len(`{"timestamp":"`) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], `{"timestamp":"`)
+
+	if pos+len(timestamp) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], timestamp)
+
+	if pos+len(`","level":"`) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], `","level":"`)
+
+	if pos+len(levelStr) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], levelStr)
+
+	if pos+len(`","msg":"`) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], `","msg":"`)
+
+	if pos+len(message) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], message)
+
+	if pos+len(`"`) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], `"`)
 
 	if l.component != "" {
+		if pos+len(`,"component":"`) >= len(buf) {
+			return len(buf)
+		}
 		pos += copy(buf[pos:], `,"component":"`)
+
+		if pos+len(l.component) >= len(buf) {
+			return len(buf)
+		}
 		pos += copy(buf[pos:], l.component)
+
+		if pos+len(`"`) >= len(buf) {
+			return len(buf)
+		}
 		pos += copy(buf[pos:], `"`)
 	}
 
 	if l.version != "" {
+		if pos+len(`,"version":"`) >= len(buf) {
+			return len(buf)
+		}
 		pos += copy(buf[pos:], `,"version":"`)
+
+		if pos+len(l.version) >= len(buf) {
+			return len(buf)
+		}
 		pos += copy(buf[pos:], l.version)
+
+		if pos+len(`"`) >= len(buf) {
+			return len(buf)
+		}
 		pos += copy(buf[pos:], `"`)
 	}
 
+	if pos+len("}\n") >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], "}\n")
 	return pos
 }
@@ -128,22 +182,65 @@ func (l *Logger) buildSimplePlainUltraFast(buf []byte, level LogLevel, message s
 	levelStr := level.StringFast()
 
 	pos := 0
+
+	// Check buffer space as we build to prevent overflow
+	if pos+19 >= len(buf) {
+		return len(buf)
+	} // timestamp[:19]
 	pos += copy(buf[pos:], timestamp[:19])
+
+	if pos+3 >= len(buf) {
+		return len(buf)
+	} // " | "
 	pos += copy(buf[pos:], " | ")
+
+	if pos+len(levelStr) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], levelStr)
 
 	// Pad level to 7 characters for alignment
 	for len(levelStr) < 7 {
+		if pos+1 >= len(buf) {
+			return len(buf)
+		}
 		pos += copy(buf[pos:], " ")
 		levelStr += " "
 	}
 
+	if pos+3 >= len(buf) {
+		return len(buf)
+	} // " | "
 	pos += copy(buf[pos:], " | ")
+
+	if pos+len(l.component) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], l.component)
+
+	if pos+1 >= len(buf) {
+		return len(buf)
+	} // " "
 	pos += copy(buf[pos:], " ")
+
+	if pos+len(l.version) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], l.version)
+
+	if pos+2 >= len(buf) {
+		return len(buf)
+	} // ": "
 	pos += copy(buf[pos:], ": ")
+
+	if pos+len(message) >= len(buf) {
+		return len(buf)
+	}
 	pos += copy(buf[pos:], message)
+
+	if pos+1 >= len(buf) {
+		return len(buf)
+	} // "\n"
 	pos += copy(buf[pos:], "\n")
 
 	return pos
