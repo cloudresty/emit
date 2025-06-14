@@ -130,7 +130,7 @@ func (l *Logger) ErrorStructured(message string, fields ...ZField) {
 
 // estimateJSONSize calculates the approximate size needed for JSON output
 func (l *Logger) estimateJSONSize(level LogLevel, message string) int {
-	// Base JSON structure: {"timestamp":"","level":"","msg":""}
+	// Base JSON structure: {"timestamp":"","level":"","message":""}
 	baseSize := 50
 
 	// Timestamp: ISO 8601 format is ~24 characters
