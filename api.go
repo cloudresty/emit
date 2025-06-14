@@ -26,9 +26,9 @@ func (InfoLogger) Pool(msg string, fn func(*PooledFields)) {
 }
 
 // Msg logs a simple info message
-func (InfoLogger) Msg(msg string) {
+func (InfoLogger) Msg(message string) {
 	if defaultLogger != nil {
-		defaultLogger.log(INFO, msg, nil)
+		defaultLogger.log(INFO, message, nil)
 	}
 }
 
@@ -58,9 +58,9 @@ func (ErrorLogger) Pool(msg string, fn func(*PooledFields)) {
 }
 
 // Msg logs a simple error message
-func (ErrorLogger) Msg(msg string) {
+func (ErrorLogger) Msg(message string) {
 	if defaultLogger != nil {
-		defaultLogger.log(ERROR, msg, nil)
+		defaultLogger.log(ERROR, message, nil)
 	}
 }
 
@@ -90,9 +90,9 @@ func (WarnLogger) Pool(msg string, fn func(*PooledFields)) {
 }
 
 // Msg logs a simple warn message
-func (WarnLogger) Msg(msg string) {
+func (WarnLogger) Msg(message string) {
 	if defaultLogger != nil {
-		defaultLogger.log(WARN, msg, nil)
+		defaultLogger.log(WARN, message, nil)
 	}
 }
 
@@ -122,9 +122,9 @@ func (DebugLogger) Pool(msg string, fn func(*PooledFields)) {
 }
 
 // Msg logs a simple debug message
-func (DebugLogger) Msg(msg string) {
+func (DebugLogger) Msg(message string) {
 	if defaultLogger != nil {
-		defaultLogger.log(DEBUG, msg, nil)
+		defaultLogger.log(DEBUG, message, nil)
 	}
 }
 

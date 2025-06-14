@@ -7,10 +7,10 @@ import (
 // Structured fields - single allocation, perfect hot path
 var (
 	// Pre-computed level strings as byte slices for maximum performance
-	debugLevelBytes = []byte(`","level":"debug","msg":"`)
-	infoLevelBytes  = []byte(`","level":"info","msg":"`)
-	warnLevelBytes  = []byte(`","level":"warn","msg":"`)
-	errorLevelBytes = []byte(`","level":"error","msg":"`)
+	debugLevelBytes = []byte(`","level":"debug","message":"`)
+	infoLevelBytes  = []byte(`","level":"info","message":"`)
+	warnLevelBytes  = []byte(`","level":"warn","message":"`)
+	errorLevelBytes = []byte(`","level":"error","message":"`)
 
 	// Global stack-based buffer for ultimate performance (no allocation accounting)
 	globalStackBuffer = [1024]byte{}
@@ -70,10 +70,10 @@ func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...Z
 	buf[0] = '{'
 	buf[1] = '"'
 	buf[2] = 't'
-	buf[3] = 's'
-	pos = 4 // Start from here for remaining "timestamp":"
-	copy(buf[pos:], []byte(`imestamp":"`))
-	pos += 11
+	buf[3] = 'i'
+	pos = 4 // Start from here for remaining "mestamp":"
+	copy(buf[pos:], []byte(`mestamp":"`))
+	pos += 10
 
 	// Fast cached timestamp - inline string copy
 	ts := GetUltraFastTimestamp()
@@ -274,10 +274,10 @@ func (l *Logger) logStructuredFieldsDynamic(level LogLevel, message string, fiel
 	buf[0] = '{'
 	buf[1] = '"'
 	buf[2] = 't'
-	buf[3] = 's'
+	buf[3] = 'i'
 	pos = 4
-	copy(buf[pos:], []byte(`imestamp":"`))
-	pos += 11
+	copy(buf[pos:], []byte(`mestamp":"`))
+	pos += 10
 
 	ts := GetUltraFastTimestamp()
 	copy(buf[pos:], ts)

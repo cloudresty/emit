@@ -40,7 +40,7 @@ const (
 type LogEntry struct {
 	Timestamp string         `json:"timestamp"`
 	Level     string         `json:"level"`
-	Msg       string         `json:"msg"`
+	Message   string         `json:"message"`
 	Component string         `json:"component,omitempty"`
 	Version   string         `json:"version,omitempty"`
 	File      string         `json:"file,omitempty"`

@@ -115,8 +115,8 @@ func main() {
 **JSON Output (Production):**
 
 ```json
-{"timestamp":"2025-06-11T10:30:45.123456789Z","level":"info","msg":"User registration","fields":{"email":"***PII***","username":"john_doe","user_id":67890,"newsletter":true,"created_at":"2025-06-11T10:30:45.123456789Z"}}
-{"timestamp":"2025-06-11T10:30:45.124567890Z","level":"error","msg":"Payment failed","fields":{"transaction_id":"txn_123","amount":29.99,"currency":"USD"}}
+{"timestamp":"2025-06-11T10:30:45.123456789Z","level":"info","message":"User registration","fields":{"email":"***PII***","username":"john_doe","user_id":67890,"newsletter":true,"created_at":"2025-06-11T10:30:45.123456789Z"}}
+{"timestamp":"2025-06-11T10:30:45.124567890Z","level":"error","message":"Payment failed","fields":{"transaction_id":"txn_123","amount":29.99,"currency":"USD"}}
 ```
 
 &nbsp;

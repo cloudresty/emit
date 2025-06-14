@@ -12,7 +12,7 @@ func (l *Logger) logJSON(level LogLevel, message string, fields map[string]any) 
 	entry := LogEntry{
 		Timestamp: GetUltraFastTimestamp(),
 		Level:     level.StringFast(),
-		Msg:       message,
+		Message:   message,
 	}
 
 	if l.component != "" {
@@ -40,7 +40,7 @@ func (l *Logger) logJSON(level LogLevel, message string, fields map[string]any) 
 	data, err := json.Marshal(entry)
 	if err != nil {
 		// Fallback to simple format if JSON marshaling fails
-		fmt.Fprintf(l.writer, `{"timestamp":"%s","level":"error","msg":"Failed to marshal log entry: %v","component":"%s"}`+"\n",
+		fmt.Fprintf(l.writer, `{"timestamp":"%s","level":"error","message":"Failed to marshal log entry: %v","component":"%s"}`+"\n",
 			GetUltraFastTimestamp(), err, l.component)
 		return
 	}
@@ -120,10 +120,10 @@ func (l *Logger) buildSimpleJSONUltraFast(buf []byte, level LogLevel, message st
 	}
 	pos += copy(buf[pos:], levelStr)
 
-	if pos+len(`","msg":"`) >= len(buf) {
+	if pos+len(`","message":"`) >= len(buf) {
 		return len(buf)
 	}
-	pos += copy(buf[pos:], `","msg":"`)
+	pos += copy(buf[pos:], `","message":"`)
 
 	if pos+len(message) >= len(buf) {
 		return len(buf)
