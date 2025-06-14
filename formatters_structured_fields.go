@@ -4,6 +4,32 @@ import (
 	"strconv"
 )
 
+// Fast JSON string escaping for structured fields
+func escapeJSONString(dst []byte, src string) int {
+	// For performance, handle the common case of no escaping needed
+	needsEscaping := false
+	for i := 0; i < len(src); i++ {
+		c := src[i]
+		if c == '"' || c == '\\' || c < 0x20 {
+			needsEscaping = true
+			break
+		}
+	}
+
+	if !needsEscaping {
+		// Fast path: no escaping needed
+		copy(dst, src)
+		return len(src)
+	}
+
+	// Slow path: escape the string using Go's built-in escaping
+	escaped := strconv.Quote(src)
+	// Remove the surrounding quotes that strconv.Quote adds
+	escaped = escaped[1 : len(escaped)-1]
+	copy(dst, escaped)
+	return len(escaped)
+}
+
 // Structured fields - single allocation, perfect hot path
 var (
 	// Pre-computed level strings as byte slices for maximum performance
@@ -131,8 +157,9 @@ func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...Z
 				copy(buf[pos:], "***MASKED***")
 				pos += 12
 			} else {
-				copy(buf[pos:], f.Value)
-				pos += len(f.Value)
+				// Properly escape JSON strings to prevent invalid JSON
+				escaped := escapeJSONString(buf[pos:], f.Value)
+				pos += escaped
 			}
 
 			buf[pos] = '"'
@@ -323,8 +350,9 @@ func (l *Logger) logStructuredFieldsDynamic(level LogLevel, message string, fiel
 				copy(buf[pos:], "***MASKED***")
 				pos += 12
 			} else {
-				copy(buf[pos:], f.Value)
-				pos += len(f.Value)
+				// Properly escape JSON strings in dynamic formatter too
+				escaped := escapeJSONString(buf[pos:], f.Value)
+				pos += escaped
 			}
 			buf[pos] = '"'
 			pos++
