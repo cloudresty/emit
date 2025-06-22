@@ -40,12 +40,12 @@ func (l *Logger) logJSON(level LogLevel, message string, fields map[string]any) 
 	data, err := json.Marshal(entry)
 	if err != nil {
 		// Fallback to simple format if JSON marshaling fails
-		fmt.Fprintf(l.writer, `{"timestamp":"%s","level":"error","message":"Failed to marshal log entry: %v","component":"%s"}`+"\n",
+		_, _ = fmt.Fprintf(l.writer, `{"timestamp":"%s","level":"error","message":"Failed to marshal log entry: %v","component":"%s"}`+"\n",
 			GetUltraFastTimestamp(), err, l.component)
 		return
 	}
 
-	fmt.Fprintln(l.writer, string(data))
+	_, _ = fmt.Fprintln(l.writer, string(data))
 }
 
 // logPlain writes a plain text formatted log entry
@@ -87,7 +87,7 @@ func (l *Logger) logPlain(level LogLevel, message string, fields map[string]any)
 
 	// Console output format:
 	// {UTC TIME} | {LOGGING LEVEL} | {COMPONENT} {VERSION}: {MESSAGE}
-	fmt.Fprintf(l.writer, "%s | %s%-7s%s | %s %s: %s\n",
+	_, _ = fmt.Fprintf(l.writer, "%s | %s%-7s%s | %s %s: %s\n",
 		GetUltraFastTimestamp()[:19],
 		colorCode, severity, resetCode, l.component, l.version, finalMessage)
 }

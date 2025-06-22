@@ -1,6 +1,6 @@
 # Benchmark Results
 
-**Generated:** 2025-06-14T17:40:27+01:00
+**Generated:** 2025-06-22T12:58:48+01:00
 
 ## System Information
 
@@ -18,14 +18,14 @@
 
 | Library | ns/op | B/op | allocs/op | Emit's Speed Advantage | Performance Classification |
 |---------|-------|------|-----------|------------------------|--------------------------|
-| **Emit** | 83.0 | 0 | 0 | **Industry Leader** | **🏆 Champion Tier** |
-| **Zap** | 165.0 | 259 | 1 | **2.0x slower than Emit** | 🥈 Competitive Tier |
-| **Logrus** | 1332.0 | 881 | 19 | **16x slower than Emit** | 🥉 Legacy Tier |
+| **Emit** | 99.0 | 0 | 0 | **Industry Leader** | **🏆 Champion Tier** |
+| **Zap** | 292.0 | 259 | 1 | **2.9x slower than Emit** | 🥈 Competitive Tier |
+| **Logrus** | 1372.0 | 881 | 19 | **14x slower than Emit** | 🥉 Legacy Tier |
 
 **🎯 Performance Analysis:**
 
-- **Emit is 2.0x faster** than Zap
-- **Emit is 16.0x faster** than Logrus
+- **Emit is 2.9x faster** than Zap
+- **Emit is 13.9x faster** than Logrus
 - **Emit achieves zero memory allocations** while competitors allocate memory
 - **Emit maintains sub-100ns performance** - industry-leading speed
 
@@ -33,12 +33,12 @@
 
 | Library | Security Type | ns/op | Security vs Speed | Data Protection Status |
 |---------|---------------|-------|-------------------|------------------------|
-| **Emit** | **🛡️ Built-in Automatic** | 108.0 | **🏆 Fast + Secure** | ✅ **100% Protected** |
-| **Emit** | ⚠️ Disabled (Unsafe) | 143.0 | 🚀 Fastest (Risky) | ❌ **Exposed** |
-| **Zap** | **❌ None (Default)** | 195.0 | ⚠️ Fast but Unsafe | ❌ **Fully Exposed** |
-| **Zap** | 🔧 Manual Implementation | 450.0 | 🐌 Slow + Complex | ✅ Protected |
-| **Logrus** | **❌ None (Default)** | 2857.0 | ⚠️ Fast but Unsafe | ❌ **Fully Exposed** |
-| **Logrus** | 🔧 Manual Implementation | 3210.0 | 🐌 Slow + Complex | ✅ Protected |
+| **Emit** | **🛡️ Built-in Automatic** | 112.0 | **🏆 Fast + Secure** | ✅ **100% Protected** |
+| **Emit** | ⚠️ Disabled (Unsafe) | 141.0 | 🚀 Fastest (Risky) | ❌ **Exposed** |
+| **Zap** | **❌ None (Default)** | 379.0 | ⚠️ Fast but Unsafe | ❌ **Fully Exposed** |
+| **Zap** | 🔧 Manual Implementation | 646.0 | 🐌 Slow + Complex | ✅ Protected |
+| **Logrus** | **❌ None (Default)** | 2997.0 | ⚠️ Fast but Unsafe | ❌ **Fully Exposed** |
+| **Logrus** | 🔧 Manual Implementation | 3216.0 | 🐌 Slow + Complex | ✅ Protected |
 
 ### Performance vs Security Trade-offs
 
@@ -57,43 +57,43 @@
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 69.0 | 128 | 1 | 14492754 |
-| StructuredFields | 83.0 | 0 | 0 | 12048193 |
-| StructuredFieldsWithData | 84.0 | 0 | 0 | 11904762 |
-| SecurityBuiltIn | 108.0 | 0 | 0 | 9259259 |
-| SecurityDisabled | 143.0 | 0 | 0 | 6993007 |
-| StructuredFieldsComplex | 244.0 | 0 | 0 | 4098361 |
-| Pool | 1234.0 | 1193 | 20 | 810373 |
-| KeyValue | 1267.0 | 1473 | 18 | 789266 |
-| Field | 1303.0 | 1521 | 21 | 767460 |
-| PoolComplex | 2946.0 | 2460 | 42 | 339443 |
-| KeyValueComplex | 3203.0 | 3038 | 38 | 312207 |
-| FieldComplex | 3227.0 | 3404 | 46 | 309885 |
+| SimpleMessage | 72.0 | 128 | 1 | 13888889 |
+| StructuredFieldsWithData | 98.0 | 0 | 0 | 10204082 |
+| StructuredFields | 99.0 | 0 | 0 | 10101010 |
+| SecurityBuiltIn | 112.0 | 0 | 0 | 8928571 |
+| SecurityDisabled | 141.0 | 0 | 0 | 7092199 |
+| StructuredFieldsComplex | 242.0 | 0 | 0 | 4132231 |
+| Pool | 1237.0 | 1193 | 20 | 808407 |
+| KeyValue | 1259.0 | 1473 | 18 | 794281 |
+| Field | 1306.0 | 1521 | 21 | 765697 |
+| PoolComplex | 3029.0 | 2460 | 42 | 330142 |
+| KeyValueComplex | 3150.0 | 3038 | 38 | 317460 |
+| FieldComplex | 3316.0 | 3404 | 46 | 301568 |
 
 ### Zap Results
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 95.0 | 2 | 0 | 10526316 |
-| SugaredLoggerFields | 97.0 | 8 | 0 | 10309278 |
-| SugaredLogger | 117.0 | 2 | 0 | 8547009 |
-| StructuredFields | 165.0 | 259 | 1 | 6060606 |
-| SugaredLoggerFieldsComplex | 191.0 | 41 | 1 | 5235602 |
-| SecurityNone | 195.0 | 387 | 1 | 5128205 |
-| StructuredFieldsComplex | 326.0 | 708 | 1 | 3067485 |
-| SecurityManual | 450.0 | 508 | 9 | 2222222 |
+| SimpleMessage | 172.0 | 2 | 0 | 5813953 |
+| SugaredLogger | 201.0 | 2 | 0 | 4975124 |
+| SugaredLoggerFields | 217.0 | 8 | 0 | 4608295 |
+| StructuredFields | 292.0 | 259 | 1 | 3424658 |
+| SecurityNone | 379.0 | 387 | 1 | 2638522 |
+| SugaredLoggerFieldsComplex | 433.0 | 41 | 1 | 2309469 |
+| StructuredFieldsComplex | 568.0 | 708 | 1 | 1760563 |
+| SecurityManual | 646.0 | 508 | 9 | 1547988 |
 
 ### Logrus Results
 
 | Benchmark | ns/op | B/op | allocs/op | ops/sec |
 |-----------|-------|------|-----------|----------|
-| SimpleMessage | 1332.0 | 881 | 19 | 750751 |
-| WithFields | 2289.0 | 1897 | 31 | 436872 |
-| Entry | 2828.0 | 2337 | 36 | 353607 |
-| SecurityNone | 2857.0 | 2397 | 37 | 350018 |
-| SecurityManual | 3210.0 | 2581 | 49 | 311526 |
-| WithFieldsComplex | 4719.0 | 4067 | 54 | 211909 |
-| EntryComplex | 4950.0 | 4626 | 55 | 202020 |
+| SimpleMessage | 1372.0 | 881 | 19 | 728863 |
+| WithFields | 2315.0 | 1897 | 31 | 431965 |
+| Entry | 2842.0 | 2337 | 36 | 351865 |
+| SecurityNone | 2997.0 | 2397 | 37 | 333667 |
+| SecurityManual | 3216.0 | 2581 | 49 | 310945 |
+| WithFieldsComplex | 4799.0 | 4067 | 54 | 208377 |
+| EntryComplex | 5590.0 | 4626 | 55 | 178891 |
 
 ## Key Findings
 
@@ -139,4 +139,4 @@
 
 🏆 Emit: The performance leader with security by design
 
-Benchmarks generated with Go 1.24+ on 2025-06-14
+Benchmarks generated with Go 1.24+ on 2025-06-22

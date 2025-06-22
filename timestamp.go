@@ -3,7 +3,6 @@ package emit
 import (
 	"sync/atomic"
 	"time"
-	"unsafe"
 )
 
 // TimestampPrecision defines the precision level for timestamps
@@ -35,8 +34,8 @@ type ultraFastTimestampCache struct {
 	// Atomic fields - must be 64-bit aligned on 32-bit systems
 	lastUpdateUnix int64
 
-	// Cached timestamp string (atomic pointer)
-	cachedTimestampPtr unsafe.Pointer // *string
+	// Cached timestamp string - using atomic.Value for safe concurrent access
+	cachedTimestamp atomic.Value // stores string
 
 	// Update frequency (in seconds) - how often to refresh timestamp
 	updateIntervalSeconds int64
@@ -48,10 +47,8 @@ var (
 		updateIntervalSeconds: 1, // Update every 1 second (but cache at nanosecond level)
 	}
 
-	// Pre-allocated timestamp buffer for ultra-fast return
-	cachedTimestampBytes  [24]byte
-	cachedTimestampString string
-	lastTimestampCheck    int64 // Minimize atomic operations
+	// Thread-safe timestamp check tracker
+	lastTimestampCheck int64 // Use atomic operations for this
 )
 
 // GetUltraFastTimestamp returns a cached timestamp string
@@ -61,25 +58,25 @@ func GetUltraFastTimestamp() string {
 	now := time.Now().Unix()
 
 	// Only check atomic lastUpdate occasionally to reduce overhead
-	if now == lastTimestampCheck {
+	// Use atomic operations for thread safety
+	lastCheck := atomic.LoadInt64(&lastTimestampCheck)
+	if now == lastCheck {
 		// Same second as last check - return cached string directly
-		timestampPtr := atomic.LoadPointer(&globalUltraFastCache.cachedTimestampPtr)
-		if timestampPtr != nil {
-			return *(*string)(timestampPtr)
+		if cached := globalUltraFastCache.cachedTimestamp.Load(); cached != nil {
+			return cached.(string)
 		}
 	}
 
-	// Update our local check
-	lastTimestampCheck = now
+	// Update our local check atomically
+	atomic.StoreInt64(&lastTimestampCheck, now)
 
 	// Check if we need a real update
 	lastUpdate := atomic.LoadInt64(&globalUltraFastCache.lastUpdateUnix)
 
-	if now-lastUpdate < globalUltraFastCache.updateIntervalSeconds {
+	if now-lastUpdate < atomic.LoadInt64(&globalUltraFastCache.updateIntervalSeconds) {
 		// Return cached timestamp
-		timestampPtr := atomic.LoadPointer(&globalUltraFastCache.cachedTimestampPtr)
-		if timestampPtr != nil {
-			return *(*string)(timestampPtr)
+		if cached := globalUltraFastCache.cachedTimestamp.Load(); cached != nil {
+			return cached.(string)
 		}
 	}
 
@@ -87,19 +84,18 @@ func GetUltraFastTimestamp() string {
 	if atomic.CompareAndSwapInt64(&globalUltraFastCache.lastUpdateUnix, lastUpdate, now) {
 		// We won the race - generate new timestamp
 		newTimestamp := generateFastTimestamp()
-		atomic.StorePointer(&globalUltraFastCache.cachedTimestampPtr, unsafe.Pointer(&newTimestamp))
+		globalUltraFastCache.cachedTimestamp.Store(newTimestamp)
 		return newTimestamp
 	}
 
 	// Another goroutine updated it, return the cached version
-	timestampPtr := atomic.LoadPointer(&globalUltraFastCache.cachedTimestampPtr)
-	if timestampPtr != nil {
-		return *(*string)(timestampPtr)
+	if cached := globalUltraFastCache.cachedTimestamp.Load(); cached != nil {
+		return cached.(string)
 	}
 
 	// First time initialization (rarely called)
 	timestamp := generateFastTimestamp()
-	atomic.StorePointer(&globalUltraFastCache.cachedTimestampPtr, unsafe.Pointer(&timestamp))
+	globalUltraFastCache.cachedTimestamp.Store(timestamp)
 	atomic.StoreInt64(&globalUltraFastCache.lastUpdateUnix, now)
 	return timestamp
 }
