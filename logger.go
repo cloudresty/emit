@@ -50,7 +50,7 @@ func (l *Logger) logSimpleUltraFast(level LogLevel, message string) {
 	// Start with small optimal stack buffer for most common cases
 	var stackBuf [128]byte
 	var pos int
-	var buf []byte = stackBuf[:]
+	buf := stackBuf[:]
 
 	// First attempt with stack buffer
 	if l.format == JSON_FORMAT {
@@ -89,7 +89,7 @@ func (l *Logger) logSimpleUltraFast(level LogLevel, message string) {
 	}
 
 	// Single write operation - most critical optimization
-	l.writer.Write(buf[:pos])
+	_, _ = l.writer.Write(buf[:pos])
 }
 
 // InfoStructured logs at INFO level with structured fields optimization

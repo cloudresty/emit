@@ -1,5 +1,11 @@
 # Emit
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/cloudresty/emit.svg)](https://pkg.go.dev/github.com/cloudresty/emit)
+[![Go Tests](https://github.com/cloudresty/emit/actions/workflows/test.yaml/badge.svg)](https://github.com/cloudresty/emit/actions/workflows/test.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cloudresty/emit)](https://goreportcard.com/report/github.com/cloudresty/emit)
+[![GitHub Tag](https://img.shields.io/github/v/tag/cloudresty/emit?label=Version)](https://github.com/cloudresty/emit/tags)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 A lightweight, structured logging library for Go applications with **built-in security features** and **industry-leading** performance. Emit provides automatic PII/sensitive data masking while outperforming all major logging libraries.
 
 - **Automatic data protection** - PII and sensitive data masked by default

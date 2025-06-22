@@ -259,7 +259,7 @@ func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...Z
 	pos += 2
 
 	// Single write operation
-	l.writer.Write(buf[:pos])
+	_, _ = l.writer.Write(buf[:pos])
 }
 
 // logStructuredFieldsDynamic - handles cases where log entry is too large for stack buffer
@@ -438,7 +438,7 @@ func (l *Logger) logStructuredFieldsDynamic(level LogLevel, message string, fiel
 	buf[pos+1] = '\n'
 	pos += 2
 
-	l.writer.Write(buf[:pos])
+	_, _ = l.writer.Write(buf[:pos])
 }
 
 // Route structured fields to implementation
