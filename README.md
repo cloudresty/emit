@@ -1,12 +1,16 @@
 # Emit
 
+A lightweight, structured logging library for Go applications with **built-in security features** and **industry-leading** performance. Emit provides automatic PII/sensitive data masking while outperforming all major logging libraries.
+
+&nbsp;
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/cloudresty/emit.svg)](https://pkg.go.dev/github.com/cloudresty/emit)
 [![Go Tests](https://github.com/cloudresty/emit/actions/workflows/test.yaml/badge.svg)](https://github.com/cloudresty/emit/actions/workflows/test.yaml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cloudresty/emit)](https://goreportcard.com/report/github.com/cloudresty/emit)
 [![GitHub Tag](https://img.shields.io/github/v/tag/cloudresty/emit?label=Version)](https://github.com/cloudresty/emit/tags)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-A lightweight, structured logging library for Go applications with **built-in security features** and **industry-leading** performance. Emit provides automatic PII/sensitive data masking while outperforming all major logging libraries.
+&nbsp;
 
 - **Automatic data protection** - PII and sensitive data masked by default
 - **Elegant API** - `emit.Info.Msg()` for simplicity, `emit.Info.Field()` for structure
@@ -15,9 +19,7 @@ A lightweight, structured logging library for Go applications with **built-in se
 
 ## Why Choose Emit?
 
-&nbsp;
-
-### 🎨 Clean, Simple API
+### Clean, Simple API
 
 ```go
 // Payment logging with built-in PCI DSS compliance
@@ -30,6 +32,10 @@ emit.Info.Field("Payment processed",
         String("currency", "USD").
         Bool("success", true))
 ```
+
+🔝 [back to top](#emit)
+
+&nbsp;
 
 ```go
 // Crystal clear intent - no cryptic function names
@@ -46,9 +52,11 @@ emit.Error.KeyValue("Payment failed",
     "card_number", "4111-1111-1111-1111")    // Auto-masked: "***PII***"
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
-### 🔒 Zero-Config Security
+### Zero-Config Security
 
 Automatic protection of sensitive data without any configuration:
 
@@ -62,6 +70,8 @@ emit.Info.Field("User registration",
         Int("user_id", 12345))                    // → 12345 (safe)
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## Installation
@@ -69,6 +79,8 @@ emit.Info.Field("User registration",
 ```bash
 go get github.com/cloudresty/emit
 ```
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -118,12 +130,16 @@ func main() {
 }
 ```
 
+&nbsp;
+
 **JSON Output (Production):**
 
 ```json
 {"timestamp":"2025-06-11T10:30:45.123456789Z","level":"info","message":"User registration","fields":{"email":"***PII***","username":"john_doe","user_id":67890,"newsletter":true,"created_at":"2025-06-11T10:30:45.123456789Z"}}
 {"timestamp":"2025-06-11T10:30:45.124567890Z","level":"error","message":"Payment failed","fields":{"transaction_id":"txn_123","amount":29.99,"currency":"USD"}}
 ```
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -145,13 +161,13 @@ emit.Warn.KeyValue(msg, k, v, ...)           // Warning with key-values
 emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## Key Features
 
-&nbsp;
-
-### 🔐 Built-in Security
+### Built-in Security
 
 - **Automatic PII masking** - Emails, phone numbers, addresses protected by default
 - **Sensitive data protection** - Passwords, API keys, tokens automatically masked
@@ -160,7 +176,7 @@ emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 
 &nbsp;
 
-### 🚀 Performance Optimized
+### Performance Optimized
 
 - **63.0 ns/op simple logging** - 23% faster than Zap
 - **96.0 ns/op structured fields** - 33% faster than Zap with zero allocations
@@ -169,12 +185,14 @@ emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 
 &nbsp;
 
-### 🎯 Developer Friendly
+### Developer Friendly
 
 - **Elegant API** - Clear, self-documenting method names
 - **IDE-friendly** - Perfect autocomplete with `emit.Info.` discovery
 - **Zero dependencies** - Uses only Go standard library
 - **Environment-aware** - JSON for production, plain text for development
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -182,7 +200,7 @@ emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 
 &nbsp;
 
-### 📚 Complete Guides
+### Complete Guides
 
 - **[API Reference](docs/API_REFERENCE.md)** - Complete examples for all logging methods
 - **[Security Guide](docs/SECURITY.md)** - Security features and compliance examples
@@ -190,9 +208,11 @@ emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 - **[Migration Guide](docs/MIGRATION.md)** - Migrate from other logging libraries
 - **[Benchmark Results](benchmarks/benchmark-results.md)** - Detailed performance comparisons
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
-### 🔧 Environment Configuration
+### Environment Configuration
 
 ```bash
 # Production (secure by default)
@@ -207,9 +227,11 @@ export EMIT_MASK_SENSITIVE=false
 export EMIT_MASK_PII=false
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
-### ⚙️ Programmatic Setup
+### Programmatic Setup
 
 ```go
 // Quick setup
@@ -224,11 +246,11 @@ emit.SetProductionMode()
 emit.SetDevelopmentMode()
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## Real-World Examples
-
-&nbsp;
 
 ### Microservice Logging
 
@@ -248,6 +270,8 @@ emit.Info.Field("API request",
         Duration("response_time", duration))
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ### Payment Processing
@@ -263,6 +287,8 @@ emit.Info.Field("Payment processed",
         String("currency", "USD").
         Bool("success", true))
 ```
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -282,11 +308,11 @@ func processRequest() {
 }
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## Migration from Other Loggers
-
-&nbsp;
 
 ### From Standard Log
 
@@ -299,6 +325,8 @@ emit.Info.KeyValue("User logged in",
     "username", username,      // Auto-protected if PII
     "password", password)      // Auto-masked
 ```
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -316,6 +344,8 @@ emit.Info.Field("User action",
         String("email", email))  // Auto-masked
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ### From Zap
@@ -332,11 +362,11 @@ emit.Info.KeyValue("Payment processed",
     "card", card)      // Auto-masked
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## Compliance & Security
-
-&nbsp;
 
 ### Automatic Compliance
 
@@ -344,6 +374,8 @@ emit.Info.KeyValue("Payment processed",
 - **✅ CCPA** - California privacy law compliance
 - **✅ HIPAA** - Healthcare data protection (with custom fields)
 - **✅ PCI DSS** - Payment card data automatically masked
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -361,9 +393,11 @@ emit.Info.KeyValue("Payment processed",
 - Access tokens, private keys, certificates
 - Session IDs, authorization headers
 
-## Why Emit is the Secure Choice
+🔝 [back to top](#emit)
 
 &nbsp;
+
+## Why Emit is the Secure Choice
 
 ### Traditional Loggers
 
@@ -383,11 +417,11 @@ emit.Info.KeyValue("Payment processed",
 - ✅ Elegant, developer-friendly API
 - ✅ Performance optimized for production workloads
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## Real-World Impact Summary
-
-&nbsp;
 
 ### Security: The Hidden Cost of Traditional Loggers
 
@@ -396,6 +430,8 @@ When choosing a logging library, most developers focus solely on performance met
 - **Data Breach Risk**: Traditional loggers like Zap and Logrus require developers to manually mask sensitive data. A single oversight can expose passwords, API keys, or PII in log files.
 - **Compliance Violations**: GDPR fines can reach €20M or 4% of annual revenue. CCPA violations cost up to $7,500 per record. Emit's automatic masking prevents these costly violations.
 - **Developer Burden**: Manual masking increases development time and introduces bugs. Emit eliminates this overhead entirely.
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -408,11 +444,11 @@ Our benchmarks demonstrate that Emit's automatic security features add **zero pe
 
 **Key Insight**: Emit with automatic security (213 ns/op) is significantly faster than Logrus without any security protection (2,872 ns/op), and competitive with Zap's unsafe mode (171 ns/op) while providing complete data protection.
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ### Production Impact: Beyond Benchmarks
-
-&nbsp;
 
 #### Traditional Logging Workflow
 
@@ -424,12 +460,16 @@ Our benchmarks demonstrate that Emit's automatic security features add **zero pe
 6. Monitor for data leaks in production
 7. **Risk**: One missed field = potential breach
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 #### Emit Workflow
 
 1. Write logging code
 2. **Done** - Security is automatic and guaranteed
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -453,6 +493,8 @@ Emit:
 ROI: $75,000 saved + zero breach risk
 ```
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ### When to Choose Each Approach
@@ -474,6 +516,8 @@ ROI: $75,000 saved + zero breach risk
 
 **Bottom Line**: Emit delivers the security of enterprise logging solutions with the performance of the fastest libraries and the simplicity of modern APIs.
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## Get Started
@@ -485,6 +529,8 @@ ROI: $75,000 saved + zero breach risk
 5. **Optimize performance**: `emit.Info.StructuredFields("Hot path", emit.ZString(...))`
 
 **Choose emit for secure, compliant, and elegant logging in your Go applications.**
+
+🔝 [back to top](#emit)
 
 &nbsp;
 
@@ -508,14 +554,32 @@ zapLogger.Info("User action",                      // 143 ns/op, 259 B/op, 1 all
     zap.Bool("success", true))
 ```
 
+🔝 [back to top](#emit)
+
+&nbsp;
+
 **Performance Comparison:**
 
 - **33% faster** than Zap's structured logging
 - **Zero memory allocations** vs Zap's heap allocations
 - **Built-in security** vs manual implementation required
 
+🔝 [back to top](#emit)
+
 &nbsp;
 
 ## License
 
 MIT License - see [LICENSE](LICENSE.txt) file for details.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+An open source project brought to you by the [Cloudresty](https://cloudresty.com) team.
+
+[Website](https://cloudresty.com) &nbsp;|&nbsp; [LinkedIn](https://www.linkedin.com/company/cloudresty) &nbsp;|&nbsp; [BlueSky](https://bsky.app/profile/cloudresty.com) &nbsp;|&nbsp; [GitHub](https://github.com/cloudresty)
+
+&nbsp;

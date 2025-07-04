@@ -2,6 +2,7 @@ package emit
 
 import (
 	"strconv"
+	"sync"
 )
 
 // Fast JSON string escaping for structured fields
@@ -30,7 +31,7 @@ func escapeJSONString(dst []byte, src string) int {
 	return len(escaped)
 }
 
-// Structured fields - single allocation, perfect hot path
+// Structured fields - thread-safe buffer pool for concurrent access
 var (
 	// Pre-computed level strings as byte slices for maximum performance
 	debugLevelBytes = []byte(`","level":"debug","message":"`)
@@ -38,23 +39,31 @@ var (
 	warnLevelBytes  = []byte(`","level":"warn","message":"`)
 	errorLevelBytes = []byte(`","level":"error","message":"`)
 
-	// Global stack-based buffer for ultimate performance (no allocation accounting)
-	globalStackBuffer = [1024]byte{}
+	// Thread-safe buffer pool to prevent race conditions
+	bufferPool = sync.Pool{
+		New: func() interface{} {
+			// Allocate 1024-byte buffer for each pool entry
+			buf := make([]byte, 1024)
+			return &buf
+		},
+	}
 
 	// Pre-allocated component and version buffers for ultra-fast access
 	componentPrefix = []byte(`,"component":"`)
 	versionPrefix   = []byte(`,"version":"`)
 )
 
-// logStructuredFields - optimized for maximum performance with minimal allocations
+// logStructuredFields - optimized for maximum performance with thread-safe buffers
 func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...ZField) {
 	// Ultra-fast level check - most critical optimization
 	if level < l.level {
 		return
 	}
 
-	// Use global stack buffer for ZERO allocations (no accounting)
-	buf := globalStackBuffer[:]
+	// Get thread-safe buffer from pool to prevent race conditions
+	bufPtr := bufferPool.Get().(*[]byte)
+	buf := *bufPtr
+	defer bufferPool.Put(bufPtr) // Return buffer to pool when done
 	pos := 0
 
 	// Hot path optimization: For common case (≤4 fields), skip estimation
