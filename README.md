@@ -33,6 +33,8 @@ emit.Info.Field("Payment processed",
         Bool("success", true))
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -52,6 +54,8 @@ emit.Error.KeyValue("Payment failed",
     "card_number", "4111-1111-1111-1111")    // Auto-masked: "***PII***"
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -70,6 +74,8 @@ emit.Info.Field("User registration",
         Int("user_id", 12345))                    // → 12345 (safe)
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -79,6 +85,8 @@ emit.Info.Field("User registration",
 ```bash
 go get github.com/cloudresty/emit
 ```
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -139,6 +147,8 @@ func main() {
 {"timestamp":"2025-06-11T10:30:45.124567890Z","level":"error","message":"Payment failed","fields":{"transaction_id":"txn_123","amount":29.99,"currency":"USD"}}
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -160,6 +170,8 @@ emit.Error.Field(msg, fields)                // Error with structured data
 emit.Warn.KeyValue(msg, k, v, ...)           // Warning with key-values
 emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 ```
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -192,6 +204,8 @@ emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 - **Zero dependencies** - Uses only Go standard library
 - **Environment-aware** - JSON for production, plain text for development
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -207,6 +221,8 @@ emit.Debug.StructuredFields(msg, zfields...) // Debug with structured fields
 - **[Performance Guide](docs/PERFORMANCE.md)** - Benchmarks and optimization strategies
 - **[Migration Guide](docs/MIGRATION.md)** - Migrate from other logging libraries
 - **[Benchmark Results](benchmarks/benchmark-results.md)** - Detailed performance comparisons
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -227,6 +243,8 @@ export EMIT_MASK_SENSITIVE=false
 export EMIT_MASK_PII=false
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -245,6 +263,8 @@ emit.SetProductionMode()
 // Development mode (show data, plain text, debug level)
 emit.SetDevelopmentMode()
 ```
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -270,6 +290,8 @@ emit.Info.Field("API request",
         Duration("response_time", duration))
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -287,6 +309,8 @@ emit.Info.Field("Payment processed",
         String("currency", "USD").
         Bool("success", true))
 ```
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -308,6 +332,8 @@ func processRequest() {
 }
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -325,6 +351,8 @@ emit.Info.KeyValue("User logged in",
     "username", username,      // Auto-protected if PII
     "password", password)      // Auto-masked
 ```
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -344,6 +372,8 @@ emit.Info.Field("User action",
         String("email", email))  // Auto-masked
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -362,6 +392,8 @@ emit.Info.KeyValue("Payment processed",
     "card", card)      // Auto-masked
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -374,6 +406,8 @@ emit.Info.KeyValue("Payment processed",
 - **✅ CCPA** - California privacy law compliance
 - **✅ HIPAA** - Healthcare data protection (with custom fields)
 - **✅ PCI DSS** - Payment card data automatically masked
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -392,6 +426,8 @@ emit.Info.KeyValue("Payment processed",
 - Passwords, PINs, API keys
 - Access tokens, private keys, certificates
 - Session IDs, authorization headers
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -417,6 +453,8 @@ emit.Info.KeyValue("Payment processed",
 - ✅ Elegant, developer-friendly API
 - ✅ Performance optimized for production workloads
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -431,6 +469,8 @@ When choosing a logging library, most developers focus solely on performance met
 - **Compliance Violations**: GDPR fines can reach €20M or 4% of annual revenue. CCPA violations cost up to $7,500 per record. Emit's automatic masking prevents these costly violations.
 - **Developer Burden**: Manual masking increases development time and introduces bugs. Emit eliminates this overhead entirely.
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -443,6 +483,8 @@ When choosing a logging library, most developers focus solely on performance met
 Our benchmarks demonstrate that Emit's automatic security features add **zero performance overhead** compared to manual implementations: [Benchmark results](benchmarks/benchmark-results.md).
 
 **Key Insight**: Emit with automatic security (213 ns/op) is significantly faster than Logrus without any security protection (2,872 ns/op), and competitive with Zap's unsafe mode (171 ns/op) while providing complete data protection.
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -460,6 +502,8 @@ Our benchmarks demonstrate that Emit's automatic security features add **zero pe
 6. Monitor for data leaks in production
 7. **Risk**: One missed field = potential breach
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -468,6 +512,8 @@ Our benchmarks demonstrate that Emit's automatic security features add **zero pe
 
 1. Write logging code
 2. **Done** - Security is automatic and guaranteed
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -493,6 +539,8 @@ Emit:
 ROI: $75,000 saved + zero breach risk
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -516,6 +564,8 @@ ROI: $75,000 saved + zero breach risk
 
 **Bottom Line**: Emit delivers the security of enterprise logging solutions with the performance of the fastest libraries and the simplicity of modern APIs.
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -529,6 +579,8 @@ ROI: $75,000 saved + zero breach risk
 5. **Optimize performance**: `emit.Info.StructuredFields("Hot path", emit.ZString(...))`
 
 **Choose emit for secure, compliant, and elegant logging in your Go applications.**
+
+&nbsp;
 
 🔝 [back to top](#emit)
 
@@ -554,6 +606,8 @@ zapLogger.Info("User action",                      // 143 ns/op, 259 B/op, 1 all
     zap.Bool("success", true))
 ```
 
+&nbsp;
+
 🔝 [back to top](#emit)
 
 &nbsp;
@@ -568,18 +622,14 @@ zapLogger.Info("User action",                      // 143 ns/op, 259 B/op, 1 all
 
 &nbsp;
 
-## License
-
-MIT License - see [LICENSE](LICENSE.txt) file for details.
-
 &nbsp;
 
 ---
 
-&nbsp;
+### Cloudresty
 
-An open source project brought to you by the [Cloudresty](https://cloudresty.com) team.
+[Website](https://cloudresty.com) &nbsp;|&nbsp; [LinkedIn](https://www.linkedin.com/company/cloudresty) &nbsp;|&nbsp; [BlueSky](https://bsky.app/profile/cloudresty.com) &nbsp;|&nbsp; [GitHub](https://github.com/cloudresty) &nbsp;|&nbsp; [Docker Hub](https://hub.docker.com/u/cloudresty)
 
-[Website](https://cloudresty.com) &nbsp;|&nbsp; [LinkedIn](https://www.linkedin.com/company/cloudresty) &nbsp;|&nbsp; [BlueSky](https://bsky.app/profile/cloudresty.com) &nbsp;|&nbsp; [GitHub](https://github.com/cloudresty)
+<sub>&copy; Cloudresty - All rights reserved</sub>
 
 &nbsp;

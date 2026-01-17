@@ -598,3 +598,17 @@ func bulkOperation(items []Item) {
 5. **Optimize performance**: Use `emit.Info.ZeroAlloc()` for hot paths
 
 **Experience the future of secure, performant, and elegant logging in Go!**
+
+&nbsp;
+
+&nbsp;
+
+---
+
+### Cloudresty
+
+[Website](https://cloudresty.com) &nbsp;|&nbsp; [LinkedIn](https://www.linkedin.com/company/cloudresty) &nbsp;|&nbsp; [BlueSky](https://bsky.app/profile/cloudresty.com) &nbsp;|&nbsp; [GitHub](https://github.com/cloudresty) &nbsp;|&nbsp; [Docker Hub](https://hub.docker.com/u/cloudresty)
+
+<sub>&copy; Cloudresty - All rights reserved</sub>
+
+&nbsp;

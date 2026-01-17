@@ -45,7 +45,7 @@ emit.Error.Field("Authentication failed",
 ### Automatically Protected PII Fields
 
 | **Field Pattern** | **Example** | **Masked As** |
-|------------------|-------------|---------------|
+| :--- | :-------------|---------------|
 | Email addresses | `user@example.com` | `***PII***` |
 | Phone numbers | `+1-555-123-4567` | `***PII***` |
 | Names | `John Doe` | `***PII***` |
@@ -404,3 +404,17 @@ emit.Info.Field("User registered",
 ```
 
 This makes emit the **secure-by-default** choice for logging in any Go application.
+
+&nbsp;
+
+&nbsp;
+
+---
+
+### Cloudresty
+
+[Website](https://cloudresty.com) &nbsp;|&nbsp; [LinkedIn](https://www.linkedin.com/company/cloudresty) &nbsp;|&nbsp; [BlueSky](https://bsky.app/profile/cloudresty.com) &nbsp;|&nbsp; [GitHub](https://github.com/cloudresty) &nbsp;|&nbsp; [Docker Hub](https://hub.docker.com/u/cloudresty)
+
+<sub>&copy; Cloudresty - All rights reserved</sub>
+
+&nbsp;

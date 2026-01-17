@@ -3,6 +3,7 @@ package emit
 import (
 	"strconv"
 	"sync"
+	"time"
 )
 
 // Fast JSON string escaping for structured fields
@@ -66,37 +67,42 @@ func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...Z
 	defer bufferPool.Put(bufPtr) // Return buffer to pool when done
 	pos := 0
 
-	// Hot path optimization: For common case (≤4 fields), skip estimation
-	// Most logging calls have 0-4 fields, so this covers 95%+ of cases
-	fieldCount := len(fields)
-	if fieldCount > 4 || len(message) > 200 {
-		// Only do estimation for complex cases
-		estimatedSize := 100 + len(message)
+	// Size estimation - always check to prevent buffer overflow
+	// Base size includes JSON structure, timestamp, level, message
+	estimatedSize := 100 + len(message)
 
-		if l.component != "" {
-			estimatedSize += 15 + len(l.component)
-		}
-		if l.version != "" {
-			estimatedSize += 13 + len(l.version)
-		}
+	if l.component != "" {
+		estimatedSize += 15 + len(l.component)
+	}
+	if l.version != "" {
+		estimatedSize += 13 + len(l.version)
+	}
 
-		for _, field := range fields {
-			switch f := field.(type) {
-			case StringZField:
-				estimatedSize += 20 + len(f.Key) + len(f.Value)
-			case IntZField:
-				estimatedSize += 20 + len(f.Key)
-			case Float64ZField:
-				estimatedSize += 30 + len(f.Key)
-			case BoolZField:
-				estimatedSize += 15 + len(f.Key)
-			}
+	for _, field := range fields {
+		switch f := field.(type) {
+		case StringZField:
+			// Account for potential JSON escaping (worst case: each char becomes 6 chars like \u0000)
+			// Use 6x multiplier to be safe for all cases
+			estimatedSize += 20 + len(f.Key) + len(f.Value)*6
+		case IntZField:
+			estimatedSize += 20 + len(f.Key)
+		case Float64ZField:
+			estimatedSize += 30 + len(f.Key)
+		case BoolZField:
+			estimatedSize += 15 + len(f.Key)
+		case Int64ZField:
+			estimatedSize += 25 + len(f.Key)
+		case DurationZField:
+			estimatedSize += 30 + len(f.Key)
+		case TimeZField:
+			estimatedSize += 40 + len(f.Key)
 		}
+	}
 
-		if estimatedSize >= len(buf) {
-			l.logStructuredFieldsDynamic(level, message, fields...)
-			return
-		}
+	// If estimated size exceeds buffer, use dynamic allocation
+	if estimatedSize >= len(buf) {
+		l.logStructuredFieldsDynamic(level, message, fields...)
+		return
 	}
 
 	// Ultra-hot path: build JSON directly with maximum inlining
@@ -239,6 +245,55 @@ func (l *Logger) logStructuredFields(level LogLevel, message string, fields ...Z
 				buf[pos+4] = 'e'
 				pos += 5
 			}
+
+		case Int64ZField:
+			// ,"key":123456789
+			buf[pos] = ','
+			buf[pos+1] = '"'
+			pos += 2
+			copy(buf[pos:], f.Key)
+			pos += len(f.Key)
+			buf[pos] = '"'
+			buf[pos+1] = ':'
+			pos += 2
+			var numBuf [20]byte
+			numStr := strconv.AppendInt(numBuf[:0], f.Value, 10)
+			copy(buf[pos:], numStr)
+			pos += len(numStr)
+
+		case DurationZField:
+			// ,"key":"1h2m3s"
+			buf[pos] = ','
+			buf[pos+1] = '"'
+			pos += 2
+			copy(buf[pos:], f.Key)
+			pos += len(f.Key)
+			buf[pos] = '"'
+			buf[pos+1] = ':'
+			buf[pos+2] = '"'
+			pos += 3
+			durStr := f.Value.String()
+			copy(buf[pos:], durStr)
+			pos += len(durStr)
+			buf[pos] = '"'
+			pos++
+
+		case TimeZField:
+			// ,"key":"2006-01-02T15:04:05.999999999Z07:00"
+			buf[pos] = ','
+			buf[pos+1] = '"'
+			pos += 2
+			copy(buf[pos:], f.Key)
+			pos += len(f.Key)
+			buf[pos] = '"'
+			buf[pos+1] = ':'
+			buf[pos+2] = '"'
+			pos += 3
+			timeStr := f.Value.Format(time.RFC3339Nano)
+			copy(buf[pos:], timeStr)
+			pos += len(timeStr)
+			buf[pos] = '"'
+			pos++
 		}
 	}
 
@@ -288,17 +343,24 @@ func (l *Logger) logStructuredFieldsDynamic(level LogLevel, message string, fiel
 	for _, field := range fields {
 		switch f := field.(type) {
 		case StringZField:
-			size += 20 + len(f.Key) + len(f.Value)
+			// Account for potential JSON escaping (worst case: each char becomes 6 chars like \u0000)
+			size += 20 + len(f.Key) + len(f.Value)*6
 		case IntZField:
 			size += 20 + len(f.Key)
 		case Float64ZField:
 			size += 30 + len(f.Key)
 		case BoolZField:
 			size += 15 + len(f.Key)
+		case Int64ZField:
+			size += 25 + len(f.Key)
+		case DurationZField:
+			size += 30 + len(f.Key)
+		case TimeZField:
+			size += 40 + len(f.Key)
 		}
 	}
 
-	// Add buffer to be safe
+	// Ensure minimum buffer size
 	if size < 2048 {
 		size = 2048
 	}
@@ -420,6 +482,52 @@ func (l *Logger) logStructuredFieldsDynamic(level LogLevel, message string, fiel
 				buf[pos+4] = 'e'
 				pos += 5
 			}
+
+		case Int64ZField:
+			buf[pos] = ','
+			buf[pos+1] = '"'
+			pos += 2
+			copy(buf[pos:], f.Key)
+			pos += len(f.Key)
+			buf[pos] = '"'
+			buf[pos+1] = ':'
+			pos += 2
+			var numBuf [20]byte
+			numStr := strconv.AppendInt(numBuf[:0], f.Value, 10)
+			copy(buf[pos:], numStr)
+			pos += len(numStr)
+
+		case DurationZField:
+			buf[pos] = ','
+			buf[pos+1] = '"'
+			pos += 2
+			copy(buf[pos:], f.Key)
+			pos += len(f.Key)
+			buf[pos] = '"'
+			buf[pos+1] = ':'
+			buf[pos+2] = '"'
+			pos += 3
+			durStr := f.Value.String()
+			copy(buf[pos:], durStr)
+			pos += len(durStr)
+			buf[pos] = '"'
+			pos++
+
+		case TimeZField:
+			buf[pos] = ','
+			buf[pos+1] = '"'
+			pos += 2
+			copy(buf[pos:], f.Key)
+			pos += len(f.Key)
+			buf[pos] = '"'
+			buf[pos+1] = ':'
+			buf[pos+2] = '"'
+			pos += 3
+			timeStr := f.Value.Format(time.RFC3339Nano)
+			copy(buf[pos:], timeStr)
+			pos += len(timeStr)
+			buf[pos] = '"'
+			pos++
 		}
 	}
 
