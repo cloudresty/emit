@@ -203,3 +203,102 @@ func TestParseKeyValuePairs(t *testing.T) {
 		t.Errorf("Expected nil result for empty args, got %v", result)
 	}
 }
+
+// TestAllAPIMethodCombinations tests all API method combinations
+func TestAllAPIMethodCombinations(t *testing.T) {
+	var buf bytes.Buffer
+
+	testLogger := &Logger{
+		level:           DEBUG,
+		writer:          &buf,
+		format:          JSON_FORMAT,
+		sensitiveMode:   SHOW_SENSITIVE,
+		piiMode:         SHOW_PII,
+		sensitiveFields: defaultSensitiveFields,
+		piiFields:       defaultPIIFields,
+	}
+
+	originalLogger := defaultLogger
+	defaultLogger = testLogger
+	defer func() { defaultLogger = originalLogger }()
+
+	// Test Info.KeyValue
+	Info.KeyValue("Info KeyValue test", "key", "value")
+	if !strings.Contains(buf.String(), "Info KeyValue test") {
+		t.Error("Info.KeyValue should log message")
+	}
+
+	buf.Reset()
+
+	// Test Info.Pool
+	Info.Pool("Info Pool test", func(pf *PooledFields) {
+		pf.String("pooled", "data")
+	})
+	if !strings.Contains(buf.String(), "Info Pool test") {
+		t.Error("Info.Pool should log message")
+	}
+
+	buf.Reset()
+
+	// Test Error.Field
+	Error.Field("Error Field test", NewFields().String("err", "test"))
+	if !strings.Contains(buf.String(), "Error Field test") {
+		t.Error("Error.Field should log message")
+	}
+
+	buf.Reset()
+
+	// Test Error.Pool
+	Error.Pool("Error Pool test", func(pf *PooledFields) {
+		pf.String("error", "data")
+	})
+	if !strings.Contains(buf.String(), "Error Pool test") {
+		t.Error("Error.Pool should log message")
+	}
+
+	buf.Reset()
+
+	// Test Warn.Field
+	Warn.Field("Warn Field test", NewFields().String("warn", "data"))
+	if !strings.Contains(buf.String(), "Warn Field test") {
+		t.Error("Warn.Field should log message")
+	}
+
+	buf.Reset()
+
+	// Test Warn.KeyValue
+	Warn.KeyValue("Warn KeyValue test", "key", "value")
+	if !strings.Contains(buf.String(), "Warn KeyValue test") {
+		t.Error("Warn.KeyValue should log message")
+	}
+
+	buf.Reset()
+
+	// Test Warn.Pool
+	Warn.Pool("Warn Pool test", func(pf *PooledFields) {
+		pf.String("warn", "pooled")
+	})
+	if !strings.Contains(buf.String(), "Warn Pool test") {
+		t.Error("Warn.Pool should log message")
+	}
+
+	buf.Reset()
+
+	// Test Debug.Field
+	Debug.Field("Debug Field test", NewFields().String("debug", "data"))
+	if !strings.Contains(buf.String(), "Debug Field test") {
+		t.Error("Debug.Field should log message")
+	}
+
+	buf.Reset()
+
+	// Test Debug.KeyValue
+	Debug.KeyValue("Debug KeyValue test", "key", "value")
+	if !strings.Contains(buf.String(), "Debug KeyValue test") {
+		t.Error("Debug.KeyValue should log message")
+	}
+
+	buf.Reset()
+
+	// Test Debug.Pool (already tested in original test)
+}
